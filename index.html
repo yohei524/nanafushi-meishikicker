@@ -37,19 +37,47 @@
     .meishi-header { text-align: center; padding: 18px 24px; }
     .meishi-title { font-size: 20px; color: #5a3a1e; font-weight: 500; margin-bottom: 6px; letter-spacing: 1px; }
     .meishi-info { font-size: 13px; color: #7a6a4a; }
-    .copy-btn {
-      margin-top: 10px;
-      padding: 8px 16px;
-      background: #5a3a1e;
+    /* 隠しコマンド風コピー印(㐂の朱印デザイン) */
+    .copy-seal {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      width: 46px;
+      height: 46px;
+      background: #a83a2c;
       color: #fbf4e2;
-      border: none;
-      border-radius: 4px;
-      font-size: 12px;
+      border: 2px solid #8a2e22;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", serif;
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 1;
       cursor: pointer;
-      letter-spacing: 1px;
+      transform: rotate(-4deg);
+      box-shadow: 0 0 0 1px rgba(168,58,44,0.15), 1px 1px 2px rgba(0,0,0,0.08);
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      user-select: none;
+      opacity: 0.9;
+      padding-bottom: 2px;
     }
-    .copy-btn:hover { background: #7a4a2e; }
-    .copy-msg { font-size: 11px; color: #2c5dab; margin-top: 6px; min-height: 14px; }
+    .copy-seal:hover {
+      transform: rotate(-4deg) scale(1.08);
+      opacity: 1;
+    }
+    .copy-seal:active {
+      transform: rotate(-4deg) scale(0.95);
+    }
+    .meishi-header { position: relative; }
+    .copy-msg {
+      font-size: 11px;
+      color: #2c5dab;
+      margin-top: 6px;
+      min-height: 14px;
+      transition: opacity 0.3s ease;
+    }
 
     .input-group { margin-bottom: 14px; }
     .input-label {
@@ -417,7 +445,7 @@
       <div class="card meishi-header">
         <h2 class="meishi-title" id="res-name-title"></h2>
         <p class="meishi-info" id="res-info"></p>
-        <button class="copy-btn" onclick="copyForClaude()">📋 鑑定素材をコピー(Claude Code投入用)</button>
+        <div class="copy-seal" onclick="copyForClaude()" title="">㐂</div>
         <div class="copy-msg" id="copy-msg"></div>
       </div>
 
