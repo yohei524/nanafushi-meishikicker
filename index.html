@@ -884,29 +884,28 @@
     }
     // 支合
     var SHIGOU = [["子","丑"],["寅","亥"],["卯","戌"],["辰","酉"],["巳","申"],["午","未"]];
-    // 半会（三合のうち中央支を含む2支ペア）
-    // 申子辰 → 申子, 子辰 / 寅午戌 → 寅午, 午戌 / 巳酉丑 → 巳酉, 酉丑 / 亥卯未 → 亥卯, 卯未
+    // 半会(高尾系)：三合の2支ペア全て(中央含む+両端も含む)
+    // 申子辰 → 申子・子辰・申辰(両端) / 寅午戌 → 寅午・午戌・寅戌(両端)
+    // 巳酉丑 → 巳酉・酉丑・巳丑(両端) / 亥卯未 → 亥卯・卯未・亥未(両端)
     var HANKAI = [
-      ["申","子"],["子","辰"],
-      ["寅","午"],["午","戌"],
-      ["巳","酉"],["酉","丑"],
-      ["亥","卯"],["卯","未"]
+      ["申","子"],["子","辰"],["申","辰"],
+      ["寅","午"],["午","戌"],["寅","戌"],
+      ["巳","酉"],["酉","丑"],["巳","丑"],
+      ["亥","卯"],["卯","未"],["亥","未"]
     ];
-    // 大半会（三合の両端ペア・中央支なし）
-    // 申子辰 → 申辰 / 寅午戌 → 寅戌 / 巳酉丑 → 巳丑 / 亥卯未 → 亥未
-    var DAIHANKAI_PAIRS = [["申","辰"],["寅","戌"],["巳","丑"],["亥","未"]];
+    // 大半会(高尾系)：三合完成(3支揃い)の時のみ判定する
     // 三合
     var SANGOU = [["申","子","辰"],["寅","午","戌"],["巳","酉","丑"],["亥","卯","未"]];
     // 対冲
     var TAICHUU = [["子","午"],["丑","未"],["寅","申"],["卯","酉"],["辰","戌"],["巳","亥"]];
     // 害
     var GAI = [["子","未"],["丑","午"],["寅","巳"],["卯","辰"],["申","亥"],["酉","戌"]];
-    // 刑
+    // 刑(高尾系表記)
     var KEI = {
-      "旺気刑":[["子","卯"]],
+      "旺刑":[["子","卯"]],
       "自刑":[["辰","辰"],["午","午"],["酉","酉"],["亥","亥"]],
-      "生気刑":[["申","寅"],["申","巳"],["寅","巳"]],
-      "庫気刑":[["丑","未"],["丑","戌"],["戌","未"]]
+      "生刑":[["申","寅"],["申","巳"],["寅","巳"]],
+      "庫刑":[["丑","未"],["丑","戌"],["戌","未"]]
     };
     // 破（算命学標準4種：子-酉、午-卯、丑-辰、未-戌）
     // ※破は単独では効果なし、他位相（対冲・刑・害）と一緒の時のみ影響
@@ -962,7 +961,6 @@
       }
       function chkHankai(label, a, b) {
         if (isPair(a, b, HANKAI)) results.push({type:"半会", label:label, strong:true});
-        if (isPair(a, b, DAIHANKAI_PAIRS)) results.push({type:"大半会", label:label, strong:true});
       }
       function chkTaichuu(label, a, b) {
         if (isPair(a, b, TAICHUU)) results.push({type:"対冲", label:label, strong:true});
@@ -1049,6 +1047,14 @@
       chkNatchin("月日", mkan, mshi, dkan, dshi);
       chkNatchin("年日", ykan, yshi, dkan, dshi);
 
+      // 天剋地冲が成立する柱ペアでは対冲を別出ししない(stock運用)
+      var innerTenkokuLabels = {};
+      results.forEach(function(r){ if (r.type==="天剋地冲") innerTenkokuLabels[r.label] = true; });
+      results = results.filter(function(r){
+        if (r.type === "対冲" && innerTenkokuLabels[r.label]) return false;
+        return true;
+      });
+
       // 破フィルター：破は単独では効果なし、同じ柱ペアに他の位相が無ければ非表示
       var filteredResults = results.filter(function(r){
         if (r.type !== "破") return true;
@@ -1073,7 +1079,6 @@
         if (isPair(unKan, targetKan, KANGOU)) add("干合", targetLabel, true);
         if (isPair(unShi, targetShi, SHIGOU)) add("支合", targetLabel, false);
         if (isPair(unShi, targetShi, HANKAI)) add("半会", targetLabel, true);
-        if (isPair(unShi, targetShi, DAIHANKAI_PAIRS)) add("大半会", targetLabel, true);
         if (isPair(unShi, targetShi, TAICHUU)) add("対冲", targetLabel, true);
         if (isPair(unShi, targetShi, GAI)) add("害", targetLabel, true);
         for (var k in KEI) {
@@ -1087,6 +1092,14 @@
       chkPair(ykan, yshi, "年柱");
       chkPair(mkan, mshi, "月柱");
       chkPair(dkan, dshi, "日柱");
+
+      // 天剋地冲が成立する柱では対冲を別出しせず吸収する(stock運用)
+      var tenkokuLabels = {};
+      results.forEach(function(r){ if (r.type==="天剋地冲") tenkokuLabels[r.label] = true; });
+      results = results.filter(function(r){
+        if (r.type === "対冲" && tenkokuLabels[r.label]) return false;
+        return true;
+      });
 
       // 大半会（三合）：後天運の支1個 + 命式の支2個 で三合が揃う
       for (var s=0; s<SANGOU.length; s++) {
@@ -2119,16 +2132,15 @@
     var ISOU_DETAIL = {
       "干合":{ category:"陽(合)", body:"結びつき・融合・変化。化合先の性質に部分的に変わる" },
       "支合":{ category:"陽(合)", body:"調和・協力・縁の深さ。地道に育つ関係" },
-      "半会":{ category:"陽(合)", body:"拡大・発展。三合の半分。発信・告知向き" },
-      "大半会":{ category:"陽(合)", body:"三合の両端ペア。拡大力が強い・遠くまで届く" },
+      "半会":{ category:"陽(合)", body:"拡大・発展。三合の2支ペア。発信・告知向き" },
       "大半会(三合)":{ category:"陽(合)", body:"三合完成・最強拡大。異次元で立体的に広がる" },
       "対冲":{ category:"陰(散)", body:"衝突・反発・分裂。激しい変動とリセット" },
       "害":{ category:"陰(散)", body:"我慢・素直に生きられない・ストレス。精神世界や無形の分野で力を発揮" },
       "破":{ category:"陰(散)", body:"単独では弱い。他位相と一緒の時に作用。崩れ・ズレ" },
-      "旺気刑":{ category:"陰(散)", body:"刑罰の刑。子卯刑。礼を欠く・暴走" },
+      "旺刑":{ category:"陰(散)", body:"子卯刑。礼を欠く・暴走" },
       "自刑":{ category:"陰(散)", body:"自分を傷つける刑。同じ支同士。自責" },
-      "生気刑":{ category:"陰(散)", body:"申巳寅の刑。野心と破壊が同居" },
-      "庫気刑":{ category:"陰(散)", body:"丑戌未の刑。家系・過去の問題が表に出る" },
+      "生刑":{ category:"陰(散)", body:"申巳寅の刑。野心と破壊が同居" },
+      "庫刑":{ category:"陰(散)", body:"丑戌未の刑。家系・過去の問題が表に出る" },
       "律音":{ category:"特殊", body:"同じ干支・原点回帰。自分に戻る日(時期)" },
       "納音":{ category:"特殊", body:"天干同じ・地支対冲。過去の清算・行き止まり・因縁解脱" },
       "天剋地冲":{ category:"特殊", body:"完全破壊と再生。やり手・勝負強さ・人の運を食う。改革と転換点" },
