@@ -692,6 +692,24 @@
         </table>
       </div>
 
+      <!-- 日運表 -->
+      <div class="card" style="position:relative;">
+        <div class="section-title">日運表(30日)</div>
+        <div class="copy-seal" onclick="copyAllUnki()" title="">㐂</div>
+        <table class="unki-table">
+          <colgroup>
+            <col class="col-period"><col class="col-kanshi"><col class="col-joushou"><col class="col-jushou"><col class="col-isou">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>日付</th><th>干支</th><th>主星</th><th>従星</th><th>位相法／天中殺</th>
+            </tr>
+          </thead>
+          <tbody id="hiun-tbody"></tbody>
+        </table>
+        <div class="copy-msg" id="copy-unki-msg" style="text-align:right;"></div>
+      </div>
+
     </div>
   </div>
 
@@ -2014,6 +2032,39 @@
           gTbody.appendChild(tr);
         }
 
+        // 日運表の描画(今日から30日間)
+        var hTbody = document.getElementById('hiun-tbody');
+        if (hTbody) {
+          hTbody.innerHTML = "";
+          var todayDateObj = new Date();
+          todayDateObj.setHours(0,0,0,0);
+          for (var dOff = 0; dOff < 30; dOff++) {
+            var d2 = new Date(todayDateObj);
+            d2.setDate(d2.getDate() + dOff);
+            var dY = d2.getFullYear();
+            var dM = d2.getMonth() + 1;
+            var dD = d2.getDate();
+            var dk = calcKanshiForDate(dY, dM, dD);
+            var dkk = dk.dkan, dks = dk.dshi;
+            var dJoushou = getJoushou(dkan, dkk) || "-";
+            var dJushou = getJushou(dkan, dks) || "-";
+            var dIsou = detectKoutenIsou(dkk, dks, "日運", ykan, yshi, mkan, mshi, dkan, dshi);
+            var dTenchuFlag = isInTenchu(dks);
+            var dTr = document.createElement('tr');
+            if (dOff === 0) dTr.classList.add('current');
+            if (dTenchuFlag) dTr.classList.add('tenchu');
+            var dTenchuTag = dTenchuFlag ? "<span class='tenchu-tag'>日天中殺</span><br>" : "";
+            var weekDayJp = ["日","月","火","水","木","金","土"][d2.getDay()];
+            dTr.innerHTML =
+              "<td class='period-cell'>"+dM+"/"+dD+"("+weekDayJp+")</td>"+
+              "<td class='kanshi-cell'>"+dkk+dks+"</td>"+
+              "<td class='star-cell'>"+dJoushou+"</td>"+
+              "<td class='star-cell'>"+dJushou+"</td>"+
+              "<td class='isou-cell'>" + dTenchuTag + formatIsou(dIsou) + "</td>";
+            hTbody.appendChild(dTr);
+          }
+        }
+
         resultEl.style.display = 'block';
         resultEl.scrollIntoView({behavior:'smooth', block:'start'});
 
@@ -2478,6 +2529,18 @@
         });
       }
 
+      md += "\n## 日運表(30日)\n";
+      var hT = document.getElementById('hiun-tbody');
+      if (hT) {
+        var rows = hT.querySelectorAll('tr');
+        rows.forEach(function(r){
+          var cells = r.querySelectorAll('td');
+          var marker = r.classList.contains('current') ? "→" : " ";
+          var tenchuMark = r.classList.contains('tenchu') ? "[日天中殺]" : "";
+          md += marker + " " + Array.from(cells).map(function(c){return c.innerText.replace(/\n/g," ");}).join(" | ") + " " + tenchuMark + "\n";
+        });
+      }
+
       navigator.clipboard.writeText(md).then(function(){
         var msg = document.getElementById('copy-msg');
         if (msg) {
@@ -2486,6 +2549,66 @@
         }
       }).catch(function(err){
         document.getElementById('copy-msg').textContent = "コピー失敗: " + err.message;
+      });
+    }
+
+    // 運気全体だけコピー(命式は含まない・大運+年運+月運+日運)
+    function copyAllUnki() {
+      var md = "";
+      function get(id) { var el = document.getElementById(id); return el ? el.innerText.trim() : ""; }
+
+      md += "# " + (get('res-name-title') || "命式") + " 運気\n";
+      md += get('res-info') + "\n\n";
+
+      md += "## 大運表(現在の大運)\n" + get('daiun-start-info') + "\n";
+      var dT = document.getElementById('daiun-tbody');
+      if (dT) {
+        dT.querySelectorAll('tr').forEach(function(r){
+          var marker = r.classList.contains('current') ? "→" : " ";
+          var tenchuMark = r.classList.contains('tenchu') ? "[大運天中殺]" : "";
+          md += marker + " " + Array.from(r.querySelectorAll('td')).map(function(c){return c.innerText.replace(/\n/g," ");}).join(" | ") + " " + tenchuMark + "\n";
+        });
+      }
+
+      md += "\n## 年運表\n";
+      var nT = document.getElementById('nenun-tbody');
+      if (nT) {
+        nT.querySelectorAll('tr').forEach(function(r){
+          var marker = r.classList.contains('current') ? "→" : " ";
+          var tenchuMark = r.classList.contains('tenchu') ? "[年天中殺]" : "";
+          md += marker + " " + Array.from(r.querySelectorAll('td')).map(function(c){return c.innerText.replace(/\n/g," ");}).join(" | ") + " " + tenchuMark + "\n";
+        });
+      }
+
+      md += "\n## 月運表\n";
+      var gT = document.getElementById('getsuun-tbody');
+      if (gT) {
+        gT.querySelectorAll('tr').forEach(function(r){
+          var marker = r.classList.contains('current') ? "→" : " ";
+          var tenchuMark = r.classList.contains('tenchu') ? "[月天中殺]" : "";
+          md += marker + " " + Array.from(r.querySelectorAll('td')).map(function(c){return c.innerText.replace(/\n/g," ");}).join(" | ") + " " + tenchuMark + "\n";
+        });
+      }
+
+      md += "\n## 日運表(30日)\n";
+      var hT = document.getElementById('hiun-tbody');
+      if (hT) {
+        hT.querySelectorAll('tr').forEach(function(r){
+          var marker = r.classList.contains('current') ? "→" : " ";
+          var tenchuMark = r.classList.contains('tenchu') ? "[日天中殺]" : "";
+          md += marker + " " + Array.from(r.querySelectorAll('td')).map(function(c){return c.innerText.replace(/\n/g," ");}).join(" | ") + " " + tenchuMark + "\n";
+        });
+      }
+
+      navigator.clipboard.writeText(md).then(function(){
+        var msg = document.getElementById('copy-unki-msg');
+        if (msg) {
+          msg.textContent = "✓ 運気全体をコピーしました(" + md.length + "文字)";
+          setTimeout(function(){ msg.textContent = ""; }, 5000);
+        }
+      }).catch(function(err){
+        var msg = document.getElementById('copy-unki-msg');
+        if (msg) msg.textContent = "コピー失敗: " + err.message;
       });
     }
 
