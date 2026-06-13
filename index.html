@@ -216,6 +216,7 @@
     .nkkanshi-alt { color: #999; font-size: 11px; font-weight: normal; margin-left: 8px; }
     .nkkanshi-line { font-size: 12px; color: #4a3a2a; margin: 3px 0; }
     .nkkanshi-line.improve { color: #2c5dab; }
+    .nkkanshi-paragraph { font-size: 12.5px; color: #3a2d1e; line-height: 1.8; margin: 8px 0; text-indent: 1em; }
     .tag-row { margin: 6px 0; }
     .tag {
       display: inline-block;
@@ -884,16 +885,18 @@
     }
     // 支合
     var SHIGOU = [["子","丑"],["寅","亥"],["卯","戌"],["辰","酉"],["巳","申"],["午","未"]];
-    // 半会(高尾系)：三合の2支ペア全て(中央含む+両端も含む)
-    // 申子辰 → 申子・子辰・申辰(両端) / 寅午戌 → 寅午・午戌・寅戌(両端)
-    // 巳酉丑 → 巳酉・酉丑・巳丑(両端) / 亥卯未 → 亥卯・卯未・亥未(両端)
+    // 半会(算命学stock準拠)：三合のうち中央支を含む2支ペアのみ
+    // 申子辰 → 申子・子辰 / 寅午戌 → 寅午・午戌
+    // 巳酉丑 → 巳酉・酉丑 / 亥卯未 → 亥卯・卯未
     var HANKAI = [
-      ["申","子"],["子","辰"],["申","辰"],
-      ["寅","午"],["午","戌"],["寅","戌"],
-      ["巳","酉"],["酉","丑"],["巳","丑"],
-      ["亥","卯"],["卯","未"],["亥","未"]
+      ["申","子"],["子","辰"],
+      ["寅","午"],["午","戌"],
+      ["巳","酉"],["酉","丑"],
+      ["亥","卯"],["卯","未"]
     ];
-    // 大半会(高尾系)：三合完成(3支揃い)の時のみ判定する
+    // 大半会(算命学stock準拠)：三合の両端ペア(中央支なし)
+    // 申子辰 → 申辰 / 寅午戌 → 寅戌 / 巳酉丑 → 巳丑 / 亥卯未 → 亥未
+    var DAIHANKAI_PAIRS = [["申","辰"],["寅","戌"],["巳","丑"],["亥","未"]];
     // 三合
     var SANGOU = [["申","子","辰"],["寅","午","戌"],["巳","酉","丑"],["亥","卯","未"]];
     // 対冲
@@ -961,6 +964,7 @@
       }
       function chkHankai(label, a, b) {
         if (isPair(a, b, HANKAI)) results.push({type:"半会", label:label, strong:true});
+        if (isPair(a, b, DAIHANKAI_PAIRS)) results.push({type:"大半会", label:label, strong:true});
       }
       function chkTaichuu(label, a, b) {
         if (isPair(a, b, TAICHUU)) results.push({type:"対冲", label:label, strong:true});
@@ -1079,6 +1083,7 @@
         if (isPair(unKan, targetKan, KANGOU)) add("干合", targetLabel, true);
         if (isPair(unShi, targetShi, SHIGOU)) add("支合", targetLabel, false);
         if (isPair(unShi, targetShi, HANKAI)) add("半会", targetLabel, true);
+        if (isPair(unShi, targetShi, DAIHANKAI_PAIRS)) add("大半会", targetLabel, true);
         if (isPair(unShi, targetShi, TAICHUU)) add("対冲", targetLabel, true);
         if (isPair(unShi, targetShi, GAI)) add("害", targetLabel, true);
         for (var k in KEI) {
@@ -1587,16 +1592,32 @@
           var nkKey = dkan + dshi;
           var detail = NIKKANSHI_DETAIL[nkKey];
           if (detail) {
-            var tagHtml = detail.tags.map(function(t){
-              return "<span class='tag'>"+t+"</span>";
-            }).join("");
-            nkReadEl.innerHTML =
-              "<div class='nkkanshi-head'>"+nkKey+"<span class='nkkanshi-name'>「"+detail.name+"」</span><span class='nkkanshi-alt'>別名："+detail.alt+"</span></div>"+
-              "<div class='tag-row'>"+tagHtml+"</div>"+
-              "<div class='nkkanshi-line'><strong>原理原則</strong>："+detail.principle+"</div>"+
-              "<div class='nkkanshi-line'><strong>外見</strong>："+detail.outerLook+"</div>"+
-              "<div class='nkkanshi-line'><strong>内面</strong>："+detail.innerNature+"</div>"+
-              "<div class='nkkanshi-line improve'><strong>改良条件</strong>："+detail.improve+"</div>";
+            // ヘッダ部分：別名 or 天聖名どちらかを併記
+            var subLabel = detail.alt ? ("別名："+detail.alt)
+                          : detail.tenSei ? ("『"+detail.tenSei+"』の性質") : "";
+            var headHtml =
+              "<div class='nkkanshi-head'>"+nkKey+"<span class='nkkanshi-name'>「"+detail.name+"」</span>"+
+              (subLabel ? "<span class='nkkanshi-alt'>"+subLabel+"</span>" : "")+
+              "</div>";
+
+            if (detail.fullText) {
+              // 本文形式(長文)
+              var paragraphs = detail.fullText.split(/\n\n+/).map(function(p){
+                return "<p class='nkkanshi-paragraph'>"+p.replace(/\n/g,"<br>")+"</p>";
+              }).join("");
+              nkReadEl.innerHTML = headHtml + paragraphs;
+            } else {
+              // タグ+項目形式(癸丑のような旧スキーマ)
+              var tagHtml = (detail.tags||[]).map(function(t){
+                return "<span class='tag'>"+t+"</span>";
+              }).join("");
+              nkReadEl.innerHTML = headHtml +
+                (tagHtml ? "<div class='tag-row'>"+tagHtml+"</div>" : "")+
+                (detail.principle ? "<div class='nkkanshi-line'><strong>原理原則</strong>："+detail.principle+"</div>" : "")+
+                (detail.outerLook ? "<div class='nkkanshi-line'><strong>外見</strong>："+detail.outerLook+"</div>" : "")+
+                (detail.innerNature ? "<div class='nkkanshi-line'><strong>内面</strong>："+detail.innerNature+"</div>" : "")+
+                (detail.improve ? "<div class='nkkanshi-line improve'><strong>改良条件</strong>："+detail.improve+"</div>" : "");
+            }
           } else {
             nkReadEl.innerHTML = "<strong>"+nkKey+"</strong><div style='font-size:11px;color:#999;margin-top:4px;'>※詳細データ未登録</div>";
           }
@@ -2035,8 +2056,23 @@
         improve:"丙丁で温め水を流す/堅実・博愛で尽くす/魅力をつける/心を動かす練習",
         outerLook:"見た目は若く柔らかだが時に荒々しさが目立つ",
         innerNature:"早熟・大人びた考え/孤独を苦にしない/古いものを排除し新しいものへ"
+      },
+      "癸酉":{
+        name:"石孔の流泉(せっこうのりゅうせん)",
+        tenSei:"天儚(てんぼう)",
+        fullText:"六十干支の中では、最も心がキレイなので、美男美女の要素のひとつです。汚されるのを最も嫌います。最もきれいな水、最も知性が高いので、最も心がキレイであり、最も頭が良すぎる人です。何かあったときは、酉があるので、癸の論理性と酉の攻撃性が出ますから、人を論破していきます。口喧嘩で勝てる相手がいません。真水ですが、酉は陰の金性なので、ゆっくり浄化をしていきます。プランクトンや藻が生息しないほどのきれいな真水なので、個性を出しすぎると、周りはいたたまれなくなります。キレイすぎて正し過ぎると、人はその中には居られなくなりますので注意が必要です。\n\nH2Oは真水ですが、他に超純水という水があります。酸素原子も陽子と中性子の数が違うのですが、超純水は調整された真水で、これを飲むと人は死にます。つまり、あまりに純粋な分子構造過ぎると、その間に余分なものを吸い込むことになるので、体にこの水が入ると、体に必要な細菌や栄養素などをすべて吸収してしまい、全部殺してしまうために、超純水というのはキレイ過ぎると、生命にとっては毒になります。\n\n癸酉はこうしたイメージなので、キレイ過ぎる水というのは、人を生かさなくなりますから、癸酉のテーマは、愛情を以て人に接することが課題になります。ただ、頭は非常に良いので、人間関係での摩擦は少なく、非常に世渡り上手となります。\"これをやったら揉める\"と、論理的に分かっていて、揉めても損をすると分かるので、上手く立ち回ることができますから、窮地に追いやられても抜け出します。"
+      },
+      "甲戌":{
+        name:"進気の木",
+        tenSei:"天赤(てんせき)",
+        fullText:"金性、土性のみの自然の中に生えている秋の木になります。『感性』も内在しているので寂しく孤独になります。ひとりで孤独であり、さらに日座天中殺の干支なので、天才なのだけれど、甲と戌で『天赤』も与えられているので、目上に学び、頼らないとうまく行かないというメッセージもあります。孤独なので自立して生きていく必要はあるが、目上にも師事する必要のある葛藤のある干支です。\n\n甲戌の木は、蔵干に微妙に金性を持っている干支ですが、もう少し金性が多いと薪になってしまいますが、秋の木でよく乾いていてよく燃えるので、人のお役にとてもよく役立つ人にもなります。\n\n知性は温かいと情となりますが、知性が冷たいと怜利となります。頭が良すぎて合理的になりやすいので、人の情に寄り添うことが出来なくなり、魅力に欠けてくる面があります。情のある温かさを見分けるには、生まれた月の月支元命(自分を表す)を確認します。月支が巳なら昼生まれになります。甲戌が昼生まれなら、温かい情が出てくるので昼生まれの方が運気は良いです。"
+      },
+      "乙亥":{
+        name:"水上寄生(すいじょうきせい)の木",
+        tenSei:"天聖(てんせい)",
+        fullText:"『天中殺理論の現象』が最優先になる干支です。人生の軌道の振り幅が人より広いために運命の上下が激しくなるため、生涯天中殺にみえるために、日座天中殺と呼ばれている干支です。\n\n頭の回転がとても早くてスターターの要素が強いので、立ち上げる才能はあるのですがまとめ上げる才能はありませんので、何かを立ち上げたら、人に任せることが改良になります。\n\n西方欠けが起こる干支なので結婚やパートナーにはトラブルが出ます。持病を持つ干支でもありますが、生涯持病持ちで生きていくことで天才性が伸びて運が強くなり上がりますし、人間性の高まりから人生が開いて行きます。"
       }
-      // ※他59干支は順次追加
+      // ※他干支は順次追加
     };
 
     // 天中殺の方位呼称
@@ -2132,7 +2168,8 @@
     var ISOU_DETAIL = {
       "干合":{ category:"陽(合)", body:"結びつき・融合・変化。化合先の性質に部分的に変わる" },
       "支合":{ category:"陽(合)", body:"調和・協力・縁の深さ。地道に育つ関係" },
-      "半会":{ category:"陽(合)", body:"拡大・発展。三合の2支ペア。発信・告知向き" },
+      "半会":{ category:"陽(合)", body:"拡大・発展。三合の中央含む2支ペア。発信・告知向き" },
+      "大半会":{ category:"陽(合)", body:"三合の両端ペア(中央なし)。拡大力が強い・遠くまで届く" },
       "大半会(三合)":{ category:"陽(合)", body:"三合完成・最強拡大。異次元で立体的に広がる" },
       "対冲":{ category:"陰(散)", body:"衝突・反発・分裂。激しい変動とリセット" },
       "害":{ category:"陰(散)", body:"我慢・素直に生きられない・ストレス。精神世界や無形の分野で力を発揮" },
