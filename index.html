@@ -1874,7 +1874,8 @@
         var sainou = getSainou(hanseiStar, centerStar, starsList);
         var sEl = document.getElementById('sainou-detail');
         if (sEl) {
-          sEl.innerHTML = "<strong>才能星(=伴星)</strong>："+sainou.talent+"<br>" +
+          sEl.innerHTML = "<strong>才能星(=剋数最大の主星)</strong>："+sainou.talent+"<br>" +
+            "<span style='font-size:11px;color:#666;'>※参考:伴星(ご先祖星)は"+(hanseiStar||"—")+"</span><br>" +
             "<strong>型</strong>："+sainou.type+"<span style='font-size:11px;color:#666;'> (剋線分布 "+sainou.kokuDist+" / 総剋線 "+sainou.totalKoku+")</span><br>" +
             "<span style='font-size:11px;'>"+sainou.typeDesc+"</span>" +
             "<div style='margin-top:6px;font-size:11px;color:#555;'>剋線詳細："+sainou.kokuDetail+"</div>" +
@@ -2392,10 +2393,12 @@
       "癸":"雨のように静か／規則性を読む／莫大な情報処理"
     };
 
-    // 才能占技（算命学stock方式：才能星=伴星 / 型は5星の剋線数で判定）
+    // 才能占技（算命学stock準拠・2026-06-26修正：才能星=剋数最大の主星）
     // 剋線=五行相剋関係(木⇔土,土⇔水,水⇔火,火⇔金,金⇔木)にあるペア数
+    // ※「伴星=才能星」は別流派の解釈・stock高尾系では「剋数最大の主星=才能星」
     function getSainou(hanseiStar, centerStar, starsList) {
-      var talent = hanseiStar || "—";
+      // talentは下のkokuByPosを計算した後に「剋数最大の主星」で再決定する
+      var talent = hanseiStar || "—"; // 一旦伴星をデフォルト・後で上書き
 
       var starToGogyou = {
         "貫索星":"木","石門星":"木",
@@ -2428,22 +2431,47 @@
       var centerKoku = 0;
       kokuByPos.forEach(function(o){ if (o.star === centerStar) centerKoku = o.count; });
 
+      // 才能星=剋数最大の主星(stock高尾系準拠)
+      // 同点の場合は中心→東→西→北→南の順で優先
+      var maxKoku = sortedCounts[0] || 0;
+      if (totalKoku > 0) {
+        // starsListの順序は [北, 東, 中心, 西, 南]
+        var positionPriority = [2, 1, 3, 0, 4]; // 中心→東→西→北→南
+        var foundTalent = null;
+        for (var pi=0; pi<positionPriority.length; pi++) {
+          var posIdx = positionPriority[pi];
+          if (kokuByPos[posIdx] && kokuByPos[posIdx].count === maxKoku) {
+            foundTalent = kokuByPos[posIdx].star;
+            break;
+          }
+        }
+        if (foundTalent) talent = foundTalent;
+      }
+
       var typeName, typeDesc;
+      // 判定優先順位:
+      // 1. 無玄(剋線ゼロ) - 特殊
+      // 2. 五宮同均(全部2) - 特殊
+      // 3. 了殿(中心が最高点で2以上) - 中心優先・順殿より前に判定する
+      // 4. 点欽(1点集中4,1)
+      // 5. 順殿(3,2,1の降順)
+      // 6. その他=中間型
       if (totalKoku === 0) {
         typeName = "無玄の型";
         typeDesc = "剋線ゼロ。豊かな才能があっても自身では気づきにくい。多様な可能性を秘めるが凝固しない。他者の反応・環境刺激で初めて才能が見える。穏やかな環境で伸びる。厳しさで潰されやすい。";
       } else if (sortedCounts.length >= 5 && sortedCounts[0]===2 && sortedCounts[1]===2 && sortedCounts[2]===2 && sortedCounts[3]===2 && sortedCounts[4]===2) {
         typeName = "五宮同均の型";
         typeDesc = "剋線2,2,2,2,2。五行完備で器用万能。突き抜けるには1点集中の覚悟が必要。";
+      } else if (centerStar && centerKoku === sortedCounts[0] && sortedCounts[0] >= 2) {
+        // 了殿の型(中心が最高点)を順殿より優先判定する
+        typeName = "了殿の型";
+        typeDesc = "別格型。中心星に剋線が集中・才能と生命力が反比例しやすい。全力疾走で体を壊す傾向。才能発揮で命/健康/経済/愛情の犠牲が出る可能性。単価上げて回数減らす設計が合う。ペースを保つことが陽転条件。";
       } else if (sortedCounts[0] >= 4 && (sortedCounts[1]||0) <= 1) {
         typeName = "点欽の型";
         typeDesc = "剋線4,1の集中型。1つの星(剋線4の星)に剋が集中。突出した才能を1点に持つ。剋が集中する星が攻撃系(車騎・牽牛)なら逆境で研ぎ澄まされる。剋が集中する星が伝達・引力系(鳳閣・調舒・禄存・司禄)なら周囲の圧で削られやすい→穏やかな環境で初めて開花する。剋集中星の性質で表れ方が真逆になる。";
       } else if (sortedCounts.length >= 3 && sortedCounts[0]===3 && sortedCounts[1]===2 && sortedCounts[2]===1) {
         typeName = "順殿の型";
         typeDesc = "剋線3,2,1の順次降下型。平凡で安定。バランス良く複数の才能。突出しないが手堅い。";
-      } else if (centerStar && centerKoku === sortedCounts[0] && sortedCounts[0] >= 2) {
-        typeName = "了殿の型";
-        typeDesc = "中心星に剋線が集中する別格型。才能と生命力が反比例しやすい。全力疾走で体を壊す。単価上げて回数減らす設計が合う。";
       } else {
         typeName = "中間型";
         typeDesc = "突出した特殊型ではないが、偏りのあるバランス。剋線分布:" + sortedCounts.join(",");
