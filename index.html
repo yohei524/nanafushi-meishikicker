@@ -641,6 +641,18 @@
         <div class="reading" id="theme-yume" style="margin-top:6px;"></div>
       </div>
 
+      <!-- 適職占技 -->
+      <div class="card">
+        <div class="section-title">適職占技</div>
+        <div class="reading" id="tekishoku-detail"></div>
+      </div>
+
+      <!-- 流動占技 -->
+      <div class="card">
+        <div class="section-title">流動占技(スタートの好機)</div>
+        <div class="reading" id="ryudo-detail"></div>
+      </div>
+
       <!-- 命式内位相法 -->
       <div class="card">
         <div class="section-title">命式内の位相法</div>
@@ -1876,6 +1888,16 @@
         document.getElementById('theme-life').innerHTML = theme.life;
         document.getElementById('theme-yume').innerHTML = theme.yume;
 
+        // 適職占技(東方=現実/収入、南方=精神/やりがい)
+        var tekishoku = getTekishoku(eastStar, southStar);
+        var tEl = document.getElementById('tekishoku-detail');
+        if (tEl) tEl.innerHTML = tekishoku;
+
+        // 流動占技(年支と後天運の位相法でスタート時期の好機を判定)
+        var ryudo = getRyudo(yshi, daiunList, daiunResult.startAge, currentAge);
+        var rEl = document.getElementById('ryudo-detail');
+        if (rEl) rEl.innerHTML = ryudo;
+
         var iList = document.getElementById('isou-list');
         iList.innerHTML = "";
         if (isouResults.length>0) {
@@ -2563,6 +2585,113 @@
       };
     }
 
+    // 適職占技(算命学stock準拠)
+    // 東方星=現実・収入面、南方星=精神・やりがい面
+    // 両者の五行関係(相生/相剋/比和)で適応度を判定
+    var TEKISHOKU_KEYWORDS = {
+      "貫索星":"維持・保守・独立業・職人・専門性を守る仕事",
+      "石門星":"リーダー・人脈活用・組織構築・営業/接客",
+      "鳳閣星":"伝達・情報整理・客観性・食/芸術/SNS発信",
+      "調舒星":"表現・専門技術・芸術・職人・ニッチで深い仕事",
+      "禄存星":"奉仕・財務管理・サービス業・福祉/接客/カウンセリング",
+      "司禄星":"地道・蓄積的・経理/事務・コツコツ積み上げる仕事",
+      "車騎星":"現場・身体使用・勝負・スポーツ/営業/動く仕事",
+      "牽牛星":"補佐役・公務員・組織人/管理職/専門職・肩書きで働く",
+      "龍高星":"企画・異文化対応・改革/国際/研究/未開拓分野",
+      "玉堂星":"学問・伝統継承・教育/研究/コンサル/世話業"
+    };
+    function getTekishoku(eastStar, southStar) {
+      if (!eastStar && !southStar) return "東方星・南方星が出ていません";
+      var eKey = TEKISHOKU_KEYWORDS[eastStar] || "—";
+      var sKey = TEKISHOKU_KEYWORDS[southStar] || "—";
+      // 五行関係の判定
+      var starToGogyou = {
+        "貫索星":"木","石門星":"木","鳳閣星":"火","調舒星":"火",
+        "禄存星":"土","司禄星":"土","車騎星":"金","牽牛星":"金",
+        "龍高星":"水","玉堂星":"水"
+      };
+      var generates = {"木":"火","火":"土","土":"金","金":"水","水":"木"};
+      var restrains = {"木":"土","土":"水","水":"火","火":"金","金":"木"};
+      var eG = starToGogyou[eastStar], sG = starToGogyou[southStar];
+      var relation = "", relationDesc = "";
+      if (!eG || !sG) {
+        relation = "判定不能";
+      } else if (eG === sG) {
+        relation = "比和";
+        relationDesc = "現実と精神が一致・適職判定明確だが該当職が得られない時の苦しみ大";
+      } else if (generates[eG] === sG) {
+        relation = "相生(東→南)";
+        relationDesc = "報酬優先から徐々にやりがい重視へ・悩み少なく自然に適応";
+      } else if (generates[sG] === eG) {
+        relation = "相生(南→東)";
+        relationDesc = "理想が現実を支える形・悩み少なく自然に適応";
+      } else if (restrains[eG] === sG) {
+        relation = "相剋(東剋南)";
+        relationDesc = "報酬重視・やりがい二の次・理想と現実の葛藤";
+      } else if (restrains[sG] === eG) {
+        relation = "相剋(南剋東)";
+        relationDesc = "やりがい重視・報酬軽視・理想と現実の葛藤";
+      }
+      return "<strong>現実適職</strong>(東方"+eastStar+")：" + eKey + "<br>" +
+             "<strong>精神適職</strong>(南方"+southStar+")：" + sKey + "<br>" +
+             "<strong>東×南の関係</strong>：" + relation +
+             (relationDesc ? "<br><span style='font-size:11px;'>" + relationDesc + "</span>" : "");
+    }
+
+    // 流動占技(算命学stock準拠)
+    // 年支(宿命の東方)と後天運の位相法でスタート時期の好機を判定
+    function getRyudo(yshi, daiunList, daiunStartAge, currentAge) {
+      if (!yshi || !daiunList || daiunList.length === 0) return "判定に必要なデータが揃っていません";
+      // 位相判定用テーブル(既存のISOU定義を活用)
+      function pairMatch(a, b, table) {
+        for (var i=0; i<table.length; i++) {
+          if ((table[i][0]===a && table[i][1]===b) || (table[i][1]===a && table[i][0]===b)) return true;
+        }
+        return false;
+      }
+      var SANGOU = [["申","子","辰"],["寅","午","戌"],["巳","酉","丑"],["亥","卯","未"]];
+      var HANKAI_PAIRS = [["申","子"],["子","辰"],["寅","午"],["午","戌"],["巳","酉"],["酉","丑"],["亥","卯"],["卯","未"]];
+      var DAIHANKAI_PAIRS = [["申","辰"],["寅","戌"],["巳","丑"],["亥","未"]];
+      var SHIGOU = [["子","丑"],["寅","亥"],["卯","戌"],["辰","酉"],["巳","申"],["午","未"]];
+      var TAICHUU = [["子","午"],["丑","未"],["寅","申"],["卯","酉"],["辰","戌"],["巳","亥"]];
+      var KEI = [["寅","巳"],["巳","申"],["寅","申"],["丑","戌"],["戌","未"],["丑","未"],["子","卯"],["辰","辰"],["午","午"],["酉","酉"],["亥","亥"]];
+      var GAI = [["子","未"],["丑","午"],["寅","巳"],["卯","辰"],["申","亥"],["酉","戌"]];
+      var HOUSANI = [["寅","卯","辰"],["巳","午","未"],["申","酉","戌"],["亥","子","丑"]];
+      function judgeIsou(yshi, daiunShi) {
+        // 三合(年支が三合に含まれる支とペアか)
+        for (var i=0; i<SANGOU.length; i++) {
+          if (SANGOU[i].indexOf(yshi) >= 0 && SANGOU[i].indexOf(daiunShi) >= 0 && yshi !== daiunShi) return {type:"三合/半会", desc:"大発展型・事業拡大・人脈拡大(資金/技術/人脈の3拍子が必須)"};
+        }
+        if (pairMatch(yshi, daiunShi, HANKAI_PAIRS)) return {type:"半会", desc:"発展型・事業拡大"};
+        if (pairMatch(yshi, daiunShi, DAIHANKAI_PAIRS)) return {type:"大半会", desc:"大発展型・事業拡大"};
+        if (pairMatch(yshi, daiunShi, SHIGOU)) return {type:"支合", desc:"手堅い発展・速度は遅い・女性起業家向き・一つをじっくり"};
+        for (var j=0; j<HOUSANI.length; j++) {
+          if (HOUSANI[j].indexOf(yshi) >= 0 && HOUSANI[j].indexOf(daiunShi) >= 0 && yshi !== daiunShi) return {type:"方三位", desc:"横広がり・薄利多売型"};
+        }
+        if (pairMatch(yshi, daiunShi, TAICHUU)) return {type:"対冲", desc:"受動的・手堅く用心深い・単独/受身型業務向き・方針変更注意"};
+        if (pairMatch(yshi, daiunShi, KEI)) return {type:"刑", desc:"孤独的な仕事向き・成功時に家庭ゴタゴタの傾向"};
+        if (pairMatch(yshi, daiunShi, GAI)) return {type:"害", desc:"裏切られやすい・契約管理必須・最も注意"};
+        return null;
+      }
+      // 現在の大運を特定し、前後の大運も含めて流動好機を出す
+      var ret = "<strong>年支</strong>："+yshi+" を起点に、各大運期の位相関係でスタートの吉凶を読みます<br>";
+      var rows = [];
+      daiunList.forEach(function(d){
+        if (!d || !d.shi) return;
+        var isou = judgeIsou(yshi, d.shi);
+        if (isou) {
+          rows.push((d.current?"→ ":"  ") + d.ageFrom+"〜"+d.ageTo+"歳("+d.kan+d.shi+")："+isou.type+" — "+isou.desc);
+        }
+      });
+      if (rows.length === 0) {
+        ret += "<span style='font-size:11px;'>該当する位相関係なし(各大運期は中立)</span>";
+      } else {
+        ret += "<pre style='font-size:11px;line-height:1.5;background:rgba(0,0,0,0.04);padding:8px;border-radius:4px;margin-top:6px;'>" + rows.join("\n") + "</pre>";
+      }
+      ret += "<div style='font-size:10px;color:#888;margin-top:4px;'>※天中殺の時期は別途避けるべし(年・月・日)</div>";
+      return ret;
+    }
+
     // 天中殺ごとの詳細
     var TENCHU_DETAIL = {
       "戌亥":{ essence:"精神性を高める使命", family:"家系の精神性を継承する宿命", improve:"形のないもの・精神世界に向かう" },
@@ -2639,6 +2768,10 @@
 
       md += "## 人生テーマ\n";
       md += get('theme-renai') + "\n" + get('theme-marriage') + "\n" + get('theme-money') + "\n" + get('theme-life') + "\n" + get('theme-yume') + "\n\n";
+
+      md += "## 適職占技\n" + get('tekishoku-detail') + "\n\n";
+
+      md += "## 流動占技\n" + get('ryudo-detail') + "\n\n";
 
       md += "## 命式内の位相法\n" + get('isou-list') + "\n\n";
 
