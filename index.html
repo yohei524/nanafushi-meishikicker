@@ -766,17 +766,18 @@
     // 蔵干選択ルール（節入り日からの経過日数で蔵干を選ぶ）
     // ZOUKAN_DAYS[支] = [{maxDays, stem}, ...] 余気→中気→本気 の順
     // maxDays=999 は「最終本気」を表す
+    // 蔵干が1つだけの支(子・卯・酉)は、節入り経過日数に関係なく本気がその1つ(高尾系)
     var ZOUKAN_DAYS = {
-      "子":[{maxDays:10, stem:"壬"}, {maxDays:999, stem:"癸"}],
+      "子":[{maxDays:999, stem:"癸"}],
       "丑":[{maxDays:9, stem:"癸"}, {maxDays:12, stem:"辛"}, {maxDays:999, stem:"己"}],
       "寅":[{maxDays:7, stem:"戊"}, {maxDays:14, stem:"丙"}, {maxDays:999, stem:"甲"}],
-      "卯":[{maxDays:10, stem:"甲"}, {maxDays:999, stem:"乙"}],
+      "卯":[{maxDays:999, stem:"乙"}],
       "辰":[{maxDays:9, stem:"乙"}, {maxDays:12, stem:"癸"}, {maxDays:999, stem:"戊"}],
       "巳":[{maxDays:7, stem:"戊"}, {maxDays:14, stem:"庚"}, {maxDays:999, stem:"丙"}],
       "午":[{maxDays:10, stem:"丙"}, {maxDays:20, stem:"己"}, {maxDays:999, stem:"丁"}],
       "未":[{maxDays:9, stem:"丁"}, {maxDays:12, stem:"乙"}, {maxDays:999, stem:"己"}],
       "申":[{maxDays:7, stem:"戊"}, {maxDays:14, stem:"壬"}, {maxDays:999, stem:"庚"}],
-      "酉":[{maxDays:10, stem:"庚"}, {maxDays:999, stem:"辛"}],
+      "酉":[{maxDays:999, stem:"辛"}],
       "戌":[{maxDays:9, stem:"辛"}, {maxDays:12, stem:"丁"}, {maxDays:999, stem:"戊"}],
       "亥":[{maxDays:7, stem:"戊"}, {maxDays:14, stem:"甲"}, {maxDays:999, stem:"壬"}]
     };
