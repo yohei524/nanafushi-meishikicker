@@ -70,14 +70,18 @@
     .copy-seal:active {
       transform: rotate(-4deg) scale(0.95);
     }
-    .meishi-header { position: relative; }
-    .copy-msg {
-      font-size: 11px;
-      color: #2c5dab;
-      margin-top: 6px;
-      min-height: 14px;
-      transition: opacity 0.3s ease;
+    /* 押した時のフラッシュ(0.6秒で明るく光って戻る) */
+    .copy-seal.flash {
+      animation: sealFlash 0.6s ease-out;
     }
+    @keyframes sealFlash {
+      0% { background: #a83a2c; box-shadow: 0 0 0 1px rgba(168,58,44,0.15), 1px 1px 2px rgba(0,0,0,0.08); transform: rotate(-4deg) scale(1); }
+      30% { background: #d6543e; box-shadow: 0 0 16px 4px rgba(214,84,62,0.5), 0 0 0 2px rgba(168,58,44,0.3); transform: rotate(-4deg) scale(1.18); }
+      100% { background: #a83a2c; box-shadow: 0 0 0 1px rgba(168,58,44,0.15), 1px 1px 2px rgba(0,0,0,0.08); transform: rotate(-4deg) scale(1); }
+    }
+    .meishi-header { position: relative; }
+    /* 旧コピーメッセージ要素は表示しない(朱印のフラッシュで代替) */
+    .copy-msg { display: none; }
 
     .input-group { margin-bottom: 14px; }
     .input-label {
@@ -2687,13 +2691,23 @@
       }
 
       navigator.clipboard.writeText(md).then(function(){
-        var msg = document.getElementById('copy-msg');
-        if (msg) {
-          msg.textContent = "✓ コピーしました(" + md.length + "文字)。Claude Codeに貼り付けてください";
-          setTimeout(function(){ msg.textContent = ""; }, 5000);
-        }
+        // 朱印を一瞬光らせる(押下成功の合図・テキスト表示なし)
+        flashCopySeal();
       }).catch(function(err){
-        document.getElementById('copy-msg').textContent = "コピー失敗: " + err.message;
+        // コンソールにのみエラー出力(画面には何も表示しない)
+        console.error("copy failed:", err);
+      });
+    }
+
+    // 朱印(全部・運気のいずれか)を一瞬光らせる
+    function flashCopySeal() {
+      var seals = document.querySelectorAll('.copy-seal');
+      seals.forEach(function(s){
+        s.classList.remove('flash');
+        // リフローを強制してアニメ再再生
+        void s.offsetWidth;
+        s.classList.add('flash');
+        setTimeout(function(){ s.classList.remove('flash'); }, 700);
       });
     }
 
@@ -2746,14 +2760,10 @@
       }
 
       navigator.clipboard.writeText(md).then(function(){
-        var msg = document.getElementById('copy-unki-msg');
-        if (msg) {
-          msg.textContent = "✓ 運気全体をコピーしました(" + md.length + "文字)";
-          setTimeout(function(){ msg.textContent = ""; }, 5000);
-        }
+        // 朱印を一瞬光らせる(テキスト表示なし)
+        flashCopySeal();
       }).catch(function(err){
-        var msg = document.getElementById('copy-unki-msg');
-        if (msg) msg.textContent = "コピー失敗: " + err.message;
+        console.error("copy failed:", err);
       });
     }
 
