@@ -407,12 +407,131 @@
       .star-name { font-size: 12px; }
     }
   </style>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+  <style id="moon-theme">
+    :root{ --mt-bg0:#0b0a10; --mt-ink:#e9e6ef; --mt-dim:#9a94a8; --mt-gold:#e2b46a;
+           --mt-glass:rgba(255,255,255,.055); --mt-glass2:rgba(255,255,255,.09); --mt-stroke:rgba(255,255,255,.10); }
+    body{
+      background-color:var(--mt-bg0) !important;
+      background-image:
+        radial-gradient(1100px 600px at 85% -10%, rgba(109,91,208,.20), transparent 60%),
+        radial-gradient(900px 500px at -10% 30%, rgba(226,180,106,.08), transparent 55%),
+        linear-gradient(180deg, #16131f, #0b0a10 40%) !important;
+      background-attachment: fixed !important;
+      color:var(--mt-ink) !important;
+      font-family:"Noto Sans JP", "Hiragino Sans", sans-serif !important;
+    }
+    .card{
+      background:var(--mt-glass) !important;
+      border:1px solid var(--mt-stroke) !important;
+      border-radius:22px !important;
+      box-shadow:0 6px 30px rgba(0,0,0,.25) !important;
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      color:var(--mt-ink) !important;
+    }
+    h1,h2,h3,h4{ color:#fff !important; }
+    .title-jp{ color:#fff !important; letter-spacing:.1em !important; font-family:"Shippori Mincho",serif !important; font-weight:600 !important; }
+    input, select, textarea{
+      background:rgba(255,255,255,.06) !important; color:#fff !important;
+      border:1px solid var(--mt-stroke) !important; border-radius:12px !important;
+    }
+    input::placeholder{ color:#6f6884 !important; }
+    .btn{
+      background:#fff !important; color:#14121b !important;
+      border:none !important; border-radius:999px !important;
+      font-weight:700 !important; letter-spacing:.08em !important;
+      transition:all .18s;
+    }
+    .btn:hover{ transform:translateY(-1px); box-shadow:0 10px 26px rgba(255,255,255,.18) !important; }
+    .sex-btn{
+      background:var(--mt-glass) !important; color:var(--mt-dim) !important;
+      border:1px solid var(--mt-stroke) !important; border-radius:999px !important;
+    }
+    .sex-btn.active{
+      background:linear-gradient(135deg,#f0d29a,var(--mt-gold)) !important;
+      color:#171320 !important; font-weight:700 !important; border-color:transparent !important;
+      box-shadow:0 4px 18px rgba(226,180,106,.28) !important;
+    }
+    table{ color:var(--mt-ink) !important; }
+    th{ background:rgba(226,180,106,.10) !important; color:var(--mt-gold) !important; border-color:rgba(255,255,255,.08) !important; }
+    td{ border-color:rgba(255,255,255,.08) !important; background:transparent !important; color:#cfcadb !important; }
+    tr.current td{ background:rgba(226,180,106,.14) !important; }
+    tr.tenchu td{ background:rgba(109,91,208,.16) !important; }
+    pre{ background:rgba(255,255,255,.045) !important; color:#cfcadb !important; border-radius:10px; }
+    .error{ color:#e08a8a !important; }
+    .date-label{ color:var(--mt-dim) !important; }
+    /* 旧・和紙トーンの文字色クラスを可読に */
+    .meishi-info, .meishi-title, p, li, span, div{ text-shadow:none; }
+    /* ===== 月齢バー ===== */
+    #mtMoonBar{
+      display:inline-flex; align-items:center; gap:13px;
+      padding:9px 20px 9px 13px; margin:0 0 14px;
+      background:var(--mt-glass); border:1px solid var(--mt-stroke); border-radius:999px;
+      backdrop-filter: blur(14px);
+    }
+    #mtMoonBar .d{ font-size:11px; color:var(--mt-dim); letter-spacing:.1em; }
+    #mtMoonBar .n{ font-family:"Shippori Mincho",serif; font-size:15px; color:#fff; letter-spacing:.08em; }
+    #mtMoonBar .a{ font-size:11px; color:var(--mt-gold); margin-left:8px; }
+    /* ===== モードタブ ===== */
+    .mt-tabs{ display:flex; gap:10px; margin:0 0 14px; }
+    .mt-tab{
+      flex:1; padding:11px; text-align:center; cursor:pointer;
+      border-radius:999px; font-size:14px; font-weight:700; letter-spacing:.12em;
+      background:var(--mt-glass); color:var(--mt-dim); border:1px solid var(--mt-stroke);
+      transition:all .18s;
+    }
+    .mt-tab.active{
+      background:linear-gradient(135deg,#f0d29a,var(--mt-gold)); color:#171320; border-color:transparent;
+      box-shadow:0 6px 22px rgba(226,180,106,.28);
+    }
+    /* ===== 鑑定プロンプトボタン ===== */
+    .kantei-row{ display:flex; gap:10px; margin-top:14px; }
+    .kantei-btn{
+      flex:1; padding:12px 10px; text-align:center; cursor:pointer;
+      border-radius:16px; font-size:13px; font-weight:700; letter-spacing:.06em;
+      border:1px solid var(--mt-stroke); transition:all .18s; line-height:1.5;
+    }
+    .kantei-btn small{ display:block; font-weight:500; font-size:10px; letter-spacing:.08em; opacity:.75; }
+    .kantei-btn.free{ background:rgba(226,180,106,.14); color:var(--mt-gold); border-color:rgba(226,180,106,.35); }
+    .kantei-btn.paid{ background:#fff; color:#14121b; border-color:transparent; }
+    .kantei-btn:hover{ transform:translateY(-1px); }
+    .kantei-btn.copied{ outline:2px solid var(--mt-gold); }
+    /* ===== 相性フォーム ===== */
+    .aishou-person{ border:1px solid var(--mt-stroke); border-radius:16px; padding:14px; margin-bottom:12px; }
+    .aishou-person .ttl{ font-size:12px; color:var(--mt-gold); letter-spacing:.2em; margin-bottom:8px; }
+    .aishou-sec{ margin-top:16px; }
+    .aishou-sec .h{ font-size:13px; color:var(--mt-gold); letter-spacing:.15em; font-weight:700; margin-bottom:6px;
+                    display:flex; align-items:center; gap:8px; }
+    .aishou-sec .h::before{ content:""; width:8px; height:8px; border-radius:50%;
+      background:radial-gradient(circle at 35% 30%, #f6dfae, var(--mt-gold)); box-shadow:0 0 10px rgba(226,180,106,.6); }
+    .aishou-sec .b{ font-size:13.5px; color:#cfcadb; line-height:1.9; }
+    .aishou-badge{ display:inline-block; padding:2px 12px; border-radius:999px; font-size:11px;
+      background:rgba(109,91,208,.2); color:#cfc5ff; margin:2px 4px 2px 0; }
+    #mt-rel{ padding:10px 14px; font-size:14px; width:100%; }
+  </style>
 </head>
 <body>
   <div class="container">
 
+    <div id="mtMoonBar">
+      <svg id="mtMoonSvg" width="30" height="30" viewBox="0 0 34 34"></svg>
+      <div>
+        <div class="d" id="mtMoonDate"></div>
+        <div class="n"><span id="mtMoonName"></span><span class="a" id="mtMoonAge"></span></div>
+      </div>
+    </div>
+
+    <div class="mt-tabs">
+      <div class="mt-tab active" id="mt-tab-single" onclick="mtSetMode('single')">ひとりをみる</div>
+      <div class="mt-tab" id="mt-tab-aishou" onclick="mtSetMode('aishou')">相性をみる</div>
+    </div>
+
+
     <!-- 入力カード -->
-    <div class="card">
+    <div class="card" id="single-card">
       <div class="header">
         <h1 class="title-jp">あなたが その魂 命に宿したエネルギーを知る</h1>
       </div>
@@ -437,13 +556,59 @@
       </div>
       <div class="input-group">
         <div class="sex-row">
-          <button class="sex-btn active" id="sex-m" onclick="setSex('M')">男性</button>
-          <button class="sex-btn" id="sex-f" onclick="setSex('F')">女性</button>
+          <button class="sex-btn" id="sex-m" onclick="setSex('M')">男性</button>
+          <button class="sex-btn active" id="sex-f" onclick="setSex('F')">女性</button>
         </div>
       </div>
       <button class="btn" onclick="calculate()">命式を出す</button>
       <div class="error" id="error"></div>
     </div>
+
+    <!-- ===== 相性鑑定 入力 ===== -->
+    <div class="card" id="aishou-card" style="display:none;">
+      <div class="header">
+        <h1 class="title-jp">ふたりの縁を みる</h1>
+      </div>
+      <div class="input-group">
+        <select id="mt-rel">
+          <option value="love">恋愛・夫婦の相性</option>
+          <option value="oyako_a_parent">親子の相性（左が親・右が子）</option>
+          <option value="oyako_a_child">親子の相性（左が子・右が親）</option>
+        </select>
+      </div>
+      <div class="aishou-person">
+        <div class="ttl">ひとりめ（本人）</div>
+        <div class="input-group"><input type="text" class="name-input" id="mtA-name" placeholder="お名前"></div>
+        <div class="input-group"><div class="date-row">
+          <div class="date-field"><input class="date-input year-input" id="mtA-year" type="tel" maxlength="4" placeholder="西暦"><span class="date-label">年</span></div>
+          <div class="date-field"><input class="date-input" id="mtA-month" type="tel" maxlength="2" placeholder="月"><span class="date-label">月</span></div>
+          <div class="date-field"><input class="date-input" id="mtA-day" type="tel" maxlength="2" placeholder="日"><span class="date-label">日</span></div>
+        </div></div>
+        <div class="sex-row">
+          <button class="sex-btn" id="mtA-sex-m" onclick="mtSetPSex('A','M')">男性</button>
+          <button class="sex-btn active" id="mtA-sex-f" onclick="mtSetPSex('A','F')">女性</button>
+        </div>
+      </div>
+      <div class="aishou-person">
+        <div class="ttl">ふたりめ（相手）</div>
+        <div class="input-group"><input type="text" class="name-input" id="mtB-name" placeholder="お名前"></div>
+        <div class="input-group"><div class="date-row">
+          <div class="date-field"><input class="date-input year-input" id="mtB-year" type="tel" maxlength="4" placeholder="西暦"><span class="date-label">年</span></div>
+          <div class="date-field"><input class="date-input" id="mtB-month" type="tel" maxlength="2" placeholder="月"><span class="date-label">月</span></div>
+          <div class="date-field"><input class="date-input" id="mtB-day" type="tel" maxlength="2" placeholder="日"><span class="date-label">日</span></div>
+        </div></div>
+        <div class="sex-row">
+          <button class="sex-btn active" id="mtB-sex-m" onclick="mtSetPSex('B','M')">男性</button>
+          <button class="sex-btn" id="mtB-sex-f" onclick="mtSetPSex('B','F')">女性</button>
+        </div>
+      </div>
+      <button class="btn" onclick="calcAishou()">縁を紐解く</button>
+      <div class="error" id="mt-error"></div>
+    </div>
+
+    <!-- ===== 相性鑑定 結果 ===== -->
+    <div class="card" id="aishou-result" style="display:none;"></div>
+
 
     <div class="result-area" id="result">
 
@@ -452,6 +617,10 @@
         <h2 class="meishi-title" id="res-name-title"></h2>
         <p class="meishi-info" id="res-info"></p>
         <div class="copy-seal" onclick="copyForClaude()" title="">㐂</div>
+        <div class="kantei-row">
+          <div class="kantei-btn free" onclick="copyKantei('free', this)">☾ 無料鑑定プロンプト<small>メイト式・核心は本鑑定に残す</small></div>
+          <div class="kantei-btn paid" onclick="copyKantei('paid', this)">本鑑定プロンプト ☗<small>全開・対処法と処方まで</small></div>
+        </div>
         <div class="copy-msg" id="copy-msg"></div>
       </div>
 
@@ -1401,7 +1570,7 @@
     // ========================================
     // UI
     // ========================================
-    var currentSex = 'M';
+    var currentSex = 'F';
     function setSex(s) {
       currentSex = s;
       document.getElementById('sex-m').classList.toggle('active', s==='M');
@@ -3121,7 +3290,7 @@
     };
 
     // Claude Code投入用コピー機能
-    function copyForClaude() {
+    function buildFullMD() {
       var md = "";
       function get(id) { var el = document.getElementById(id); return el ? el.innerText.trim() : ""; }
 
@@ -3241,13 +3410,20 @@
         });
       }
 
-      navigator.clipboard.writeText(md).then(function(){
-        // 朱印を一瞬光らせる(押下成功の合図・テキスト表示なし)
+      return md;
+    }
+
+    function doCopy(text, btn) {
+      navigator.clipboard.writeText(text).then(function(){
         flashCopySeal();
+        if (btn) { btn.classList.add('copied'); setTimeout(function(){ btn.classList.remove('copied'); }, 900); }
       }).catch(function(err){
-        // コンソールにのみエラー出力(画面には何も表示しない)
         console.error("copy failed:", err);
       });
+    }
+    function copyForClaude() { doCopy(buildFullMD()); }
+    function copyKantei(mode, btn) {
+      doCopy((mode === 'free' ? PROMPT_FREE : PROMPT_PAID) + buildFullMD(), btn);
     }
 
     // 朱印(全部・運気のいずれか)を一瞬光らせる
@@ -3318,9 +3494,322 @@
       });
     }
 
+
+    // ================================================================
+    // 260713追加：鑑定プロンプト（無料/有料）・月齢・相性鑑定モード
+    // ================================================================
+
+    var PROMPT_FREE = "# 鑑定AIへの指示（無料鑑定モード）\n\n" +
+      "あなたは占い師のアシスタントです。以下の命式データを素材に、無料鑑定の文章を作ります。\n" +
+      "無料鑑定の絶対ルール：\n" +
+      "1. 当てる力は全開。ただし伝えるのは「真実の5割」まで\n" +
+      "2. 読める材料を全部使わない。その人の芯をひとつに絞り、短く深く当てる\n" +
+      "3. 核心は断言しない。方向は見せて、核心は本鑑定（有料）に残す\n" +
+      "4. 対処法・開運法・具体的な処方は書かない（それは本鑑定の領域）\n" +
+      "5. 価格・営業文言・誘導フレーズは書かない\n" +
+      "6. 構成は5ステップ：共感 → 本人も気づいていない問題提起 → 今動く意味 → 方向は見せて核心は伏せる → 続きが気になる締め（具体的で強いフックをひとつ）\n" +
+      "7. 専門用語は日常語に翻訳する（干合・天中殺などの術語をそのまま出さない）\n" +
+      "8. 相手が自己卑下しても乗らない。卑下は命式の長所の裏返しとして翻訳する\n" +
+      "9. 長文にしない。短い段落2〜4つ。人間くさく、講師っぽくしない\n\n---\n\n";
+
+    var PROMPT_PAID = "# 鑑定AIへの指示（本鑑定・有料モード）\n\n" +
+      "あなたは占い師のアシスタントです。以下の命式データを使い、有料の本鑑定文を作ります。\n" +
+      "本鑑定のルール：\n" +
+      "1. 材料は全部使ってよい。核心まで明かす\n" +
+      "2. 構成：本質（どういう魂か）→ 才能と活かし方 → 運気のリズム（大運・年運） → 相談テーマへの答え → 対処法・過ごし方の処方\n" +
+      "3. 対処法まで必ず書く（環境の作り方・縁の使い方・時期の選び方・守護神の活かし方）\n" +
+      "4. 断定しつつも逃げ道を必ず示す。決めつけない・恐怖で終わらせない・押し付けない\n" +
+      "5. 悪い時期は「何をする時期か」に翻訳する（天中殺＝拡張と学びの時期、など）\n" +
+      "6. 専門用語は使ってよいが、必ずひとことで日常語の説明を添える\n" +
+      "7. 締めは前向きに。相手が今日から動けるひとことで終える\n\n---\n\n";
+
+    var PROMPT_AISHOU_FREE = "# 鑑定AIへの指示（相性・無料鑑定モード）\n\n" +
+      "あなたは占い師のアシスタントです。以下の二人の命式と相性素材から、無料の相性鑑定文を作ります。\n" +
+      "ルール：\n" +
+      "1. 相性は「良い/悪い」で切らない。「何をもたらし合う二人か」で語る\n" +
+      "2. 伝えるのは真実の5割まで。一番効く一点に絞って短く深く\n" +
+      "3. 関係の核心（こじれの正体・転機の時期）は断言せず、本鑑定に残す\n" +
+      "4. 対処法・役割分担の処方は書かない（本鑑定の領域）\n" +
+      "5. 専門用語は日常語に翻訳。価格・営業文言なし\n" +
+      "6. 締めは「続きが気になる」具体的なフックをひとつ\n\n---\n\n";
+
+    var PROMPT_AISHOU_PAID = "# 鑑定AIへの指示（相性・本鑑定モード）\n\n" +
+      "あなたは占い師のアシスタントです。以下の二人の命式と相性素材から、有料の相性本鑑定文を作ります。\n" +
+      "ルール：\n" +
+      "1. 材料は全部使う。関係の構造 → 強み → こじれやすいポイント → 時期（良い年・注意の年） → 処方（役割分担・距離感・具体的な過ごし方）の順で\n" +
+      "2. 相性は「良い/悪い」でなく「何をもたらし合うか」。対冲や刑も「長期では化ける」まで翻訳する\n" +
+      "3. 親子の場合：干合は「輝かせ合う関係」を厚く。注意点はひとことに留める。子の自立の方向まで示す\n" +
+      "4. 断定しつつ逃げ道を示す。恐怖で終わらせない\n" +
+      "5. 締めは二人が今日からできる具体的なひとことで\n\n---\n\n";
+
+    // ---------- 月齢 ----------
+    (function mtInitMoon(){
+      var syn = 29.530589, base = Date.UTC(2000, 0, 6, 18, 14);
+      var now = new Date();
+      var age = ((now.getTime() - base) / 86400000) % syn; if (age < 0) age += syn;
+      function nameOf(a){
+        if(a<1.0)return"新月"; if(a<2.5)return"二日月"; if(a<4.0)return"三日月"; if(a<6.5)return"五日月";
+        if(a<8.5)return"上弦の月"; if(a<11.5)return"十日夜の月"; if(a<13.5)return"十三夜月"; if(a<14.5)return"小望月";
+        if(a<15.6)return"満月"; if(a<16.6)return"十六夜"; if(a<17.6)return"立待月"; if(a<18.6)return"居待月";
+        if(a<19.6)return"寝待月"; if(a<21.0)return"更待月"; if(a<23.5)return"下弦の月"; if(a<26.5)return"有明の月";
+        if(a<29.0)return"晦の月"; return"新月";
+      }
+      var el = document.getElementById('mtMoonDate');
+      if (!el) return;
+      el.textContent = now.getFullYear()+"年"+(now.getMonth()+1)+"月"+now.getDate()+"日（"+"日月火水木金土"[now.getDay()]+"）";
+      document.getElementById('mtMoonName').textContent = nameOf(age);
+      document.getElementById('mtMoonAge').textContent = "月齢 " + age.toFixed(1);
+      var phase = age/syn, illum = (1-Math.cos(2*Math.PI*phase))/2, waxing = phase<0.5;
+      var k = 2*illum-1, r=15, cx=17, cy=17, so = waxing?1:0, rx = Math.abs(k)*r, si = (k>0?so:1-so);
+      var d = "M "+cx+" "+(cy-r)+" A "+r+" "+r+" 0 0 "+so+" "+cx+" "+(cy+r)+" A "+rx+" "+r+" 0 0 "+si+" "+cx+" "+(cy-r)+" Z";
+      var svg = document.getElementById('mtMoonSvg');
+      svg.innerHTML = '<defs><radialGradient id="mtmg" cx="35%" cy="30%"><stop offset="0%" stop-color="#f8e6bc"/><stop offset="60%" stop-color="#e2b46a"/><stop offset="100%" stop-color="#b08540"/></radialGradient></defs>' +
+        '<circle cx="17" cy="17" r="15" fill="#26222f" stroke="rgba(255,255,255,.14)" stroke-width="1"/>' +
+        (illum>0.985 ? '<circle cx="17" cy="17" r="15" fill="url(#mtmg)"/>' : illum<0.015 ? '' : '<path d="'+d+'" fill="url(#mtmg)"/>');
+    })();
+
+    // ---------- モード切替 ----------
+    var mtMode = 'single';
+    function mtSetMode(m){
+      mtMode = m;
+      document.getElementById('mt-tab-single').classList.toggle('active', m==='single');
+      document.getElementById('mt-tab-aishou').classList.toggle('active', m==='aishou');
+      document.getElementById('single-card').style.display = (m==='single') ? '' : 'none';
+      document.getElementById('aishou-card').style.display = (m==='aishou') ? '' : 'none';
+      var res = document.getElementById('result');
+      if (res) res.style.display = (m==='single') ? '' : 'none';
+      var ares = document.getElementById('aishou-result');
+      if (ares && ares.innerHTML) ares.style.display = (m==='aishou') ? '' : 'none';
+    }
+    var mtSex = { A:'F', B:'M' };
+    function mtSetPSex(p, s){
+      mtSex[p] = s;
+      document.getElementById('mt'+p+'-sex-m').classList.toggle('active', s==='M');
+      document.getElementById('mt'+p+'-sex-f').classList.toggle('active', s==='F');
+    }
+
+    // ---------- 天中殺グループ相性（6×6・行=本人/列=相手） ----------
+    var TENCHU_AISHOU = {
+      "子丑":{"子丑":"⚠ 同一グループ。似た者同士で比較・嫉妬が生まれやすい。第三者を間に置くと安定",
+              "寅卯":"◎ 子丑の過激さを寅卯が制御してくれる。結婚向きの組み合わせ",
+              "辰巳":"◎ 最良。昇竜運。互いに尊重し合えば一代で花開く",
+              "午未":"✕ 対冲天中殺。理屈で縛られがんじがらめに。短期はストレス、長期で補完",
+              "申酉":"○ 前進力とスピードが増す。社会的レベルアップに心強い",
+              "戌亥":"△ レベルアップに有益だが一緒にいて疲弊しやすい。体調管理を"},
+      "寅卯":{"子丑":"◎ 明るさ・楽しさが加わり堅苦しさが緩和。役割分担（寅卯=財務・子丑=企画）で吉",
+              "寅卯":"⚠ 同一グループ。発展性に乏しい。第三者の存在が必須",
+              "辰巳":"◎ 最高のパートナー。辰巳がレールを敷き寅卯が進む相互補完",
+              "午未":"△ 条件付き。現実的利益を求める場面では最悪、精神的支援が必要な時のみ有効",
+              "申酉":"✕ 対冲天中殺。プライベートは合わない。ビジネス分担（内部=寅卯・外部=申酉）なら有効",
+              "戌亥":"△ 大変化をもたらす相手。良くも悪くも人生が動く"},
+      "辰巳":{"子丑":"○ 実利と行動力が増す。相手の見極めは必要",
+              "寅卯":"△ 穏やかさをもたらすが現状維持に留まる。上昇したい時は物足りない",
+              "辰巳":"⚠ 同一グループ。波乱度が増す。夫婦の場合は落ち着かない",
+              "午未":"○ 知性とブレーキ役。堅実で計画的になれる",
+              "申酉":"◎ 歯車のように噛み合い着実に発展。盤石の運気",
+              "戌亥":"⚠ 対冲天中殺。短期はストレス・欠点の指摘合戦。長期では欠点を補い合える"},
+      "午未":{"子丑":"○ 目下育成を任せられる。未来を託せる相手",
+              "寅卯":"△ 平和だが進展なし。拡大局面では不向き",
+              "辰巳":"△ 計画が頓挫した時のアドバイザー。順調な時は邪魔に感じることも",
+              "午未":"⚠ 同一グループ。学びを刺激し合うが、家族では派閥化しやすい",
+              "申酉":"◎ 最良。バランスの取れた前進型。理想が実現しやすい（精神の深い交わりは薄め）",
+              "戌亥":"✕ 一か八かの相手。大成功か大失敗の二択。心身の酷使に注意"},
+      "申酉":{"子丑":"△ 長期向き（部下育成など）。短期決戦には不向き",
+              "寅卯":"⚠ 対冲天中殺。精神は合わないが現実面では欠点を補える",
+              "辰巳":"◎ 最良。安定感が増し理想の形。無理をしすぎて体を壊さないよう注意",
+              "午未":"○ 自分を引き上げてくれる相手。学びと品性を得る（夫婦では息苦しさも）",
+              "申酉":"⚠ 同一グループ。空中分解しやすい。結婚不向き・短期プロジェクト向き",
+              "戌亥":"○ 徳を積み人として完成に向かう。人格形成を助けてくれる"},
+      "戌亥":{"子丑":"△ 気分転換・遊び心をくれる相手。ワンポイントの支え",
+              "寅卯":"△ ブレーキ役。家族重視へ導く小休止",
+              "辰巳":"⚠ 対冲天中殺。プライドを手放して身を委ねられれば最高のパートナーに転換",
+              "午未":"◎ 一番飛躍できる組み合わせ。金銭目的でなければ天井知らず",
+              "申酉":"◎ 社会進出に不可欠な相手。人脈と対応力を支えてくれる",
+              "戌亥":"⚠ 同一グループ。理想論で盛り上がるが前進力がない。仲介役を置く"}
+    };
+
+    // ---------- 相性計算 ----------
+    function mtReadPerson(p){
+      var y = parseInt(document.getElementById('mt'+p+'-year').value, 10);
+      var m = parseInt(document.getElementById('mt'+p+'-month').value, 10);
+      var d = parseInt(document.getElementById('mt'+p+'-day').value, 10);
+      var name = (document.getElementById('mt'+p+'-name').value || (p==='A'?'ひとりめ':'ふたりめ')).trim();
+      if (!y || !m || !d || y < 1900 || y > 2100 || m < 1 || m > 12 || d < 1 || d > 31) return null;
+      var k = calcKanshiForDate(y, m, d);
+      k.name = name; k.sex = mtSex[p]; k.y = y; k.m = m; k.d = d;
+      k.tenchu = getTenchu(k.dayIdx);
+      return k;
+    }
+    function mtStemRel(a, b){
+      if (a === b) return "比和（同じ干）";
+      for (var i=0;i<KANGOU.length;i++){
+        if ((KANGOU[i][0]===a&&KANGOU[i][1]===b)||(KANGOU[i][1]===a&&KANGOU[i][0]===b)) {
+          var henka = (typeof getKangouHenka==='function') ? getKangouHenka(a,b) : null;
+          return "干合（" + a + "×" + b + (henka ? "・" + henka + "に化す" : "") + "）";
+        }
+      }
+      var ga = STEM_GOGYOU[a], gb = STEM_GOGYOU[b];
+      var rel = GOGYOU_REL[ga.g][gb.g];
+      if (rel === "比和") return "比和（同じ五行）";
+      if (rel === "洩") return "本人が相手を生じる（与える側）";
+      if (rel === "生") return "相手が本人を生じる（受け取る側）";
+      if (rel === "剋出") return "本人が相手を剋す（本人が攻め手）";
+      return "相手が本人を剋す（相手が攻め手）";
+    }
+    function mtKeiGroup(a, b){
+      for (var g in KEI) {
+        for (var i=0;i<KEI[g].length;i++){
+          var pr = KEI[g][i];
+          if ((pr[0]===a&&pr[1]===b)||(pr[1]===a&&pr[0]===b)) return g;
+        }
+      }
+      return null;
+    }
+    function mtShukumeiTenchu(k){
+      var map = {"戌亥":["戌","亥"],"申酉":["申","酉"],"午未":["午","未"],"辰巳":["辰","巳"],"寅卯":["寅","卯"],"子丑":["子","丑"]};
+      var mine = map[k.tenchu] || [];
+      var out = [];
+      if (mine.indexOf(k.yshi) >= 0) out.push("生年中殺（親・目上との縁が独特）");
+      if (mine.indexOf(k.mshi) >= 0) out.push("生月中殺（家系・社会との縁が独特）");
+      var nichiza = ["甲戌","乙亥","庚子"];
+      if (nichiza.indexOf(k.dkan + k.dshi) >= 0) out.push("日座中殺（配偶者・家庭の縁が独特）");
+      var yTen = map[getTenchu(k.yIdx)] || [];
+      if (yTen.indexOf(k.dshi) >= 0 && mine.indexOf(k.yshi) >= 0) out.push("互換中殺（親と互いの天中殺を抱え合う・初代の気）");
+      return out;
+    }
+    function calcAishou(){
+      var errEl = document.getElementById('mt-error');
+      errEl.textContent = "";
+      var A = mtReadPerson('A'), B = mtReadPerson('B');
+      if (!A || !B) { errEl.textContent = "ふたり分の生年月日を正しく入れてください"; return; }
+      var rel = document.getElementById('mt-rel').value;
+
+      var out = { A:A, B:B, rel:rel, sections:[] };
+
+      // 1. 日干の関係
+      var stemRel = mtStemRel(A.dkan, B.dkan);
+      var isKangou = stemRel.indexOf("干合") === 0;
+      var s1 = A.name + "（" + A.dkan + "）×" + B.name + "（" + B.dkan + "）：" + stemRel;
+      if (isKangou) {
+        var shigou = isPair(A.dshi, B.dshi, SHIGOU);
+        var gai = isPair(A.dshi, B.dshi, GAI);
+        if (shigou) s1 += "\n★ 日柱同士が【干合支合】＝天地が二重に結ばれるベストカップル級の縁";
+        else if (gai) s1 += "\n※ 日柱同士が【干合支害】＝心は強く結ばれるが、思考と行動がズレやすい縁";
+        else s1 += "\n★ 日干同士の干合＝理屈を超えた強い引力。宿命レベルの縁";
+      }
+      out.sections.push({ h:"日干の関係（精神の核）", b:s1 });
+
+      // 2. 天中殺グループ相性
+      var t = (TENCHU_AISHOU[A.tenchu] || {})[B.tenchu] || "";
+      out.sections.push({ h:"天中殺グループの相性", b:A.name + "＝" + A.tenchu + "天中殺 ／ " + B.name + "＝" + B.tenchu + "天中殺\n" + t });
+
+      // 3. 共通干支（信頼度）
+      var pillarsA = [["年", A.ykan, A.yshi],["月", A.mkan, A.mshi],["日", A.dkan, A.dshi]];
+      var pillarsB = [["年", B.ykan, B.yshi],["月", B.mkan, B.mshi],["日", B.dkan, B.dshi]];
+      var kyotu = [];
+      pillarsA.forEach(function(pa){ pillarsB.forEach(function(pb){
+        var label = A.name + "の" + pa[0] + "柱×" + B.name + "の" + pb[0] + "柱";
+        if (pa[1]===pb[1] && pa[2]===pb[2]) kyotu.push(label + "：律音（同じ干支・一心同体の絆）");
+        else if (isNatchin(pa[1],pa[2],pb[1],pb[2])) kyotu.push(label + "：納音（精神は同じ・現実は打ち消し合う因縁）");
+        else if (pa[1]===pb[1] && (isPair(pa[2],pb[2],HANKAI) || isPair(pa[2],pb[2],DAIHANKAI_PAIRS))) kyotu.push(label + "：大半会（強い追い風の絆）");
+      }); });
+      out.sections.push({ h:"共通干支と信頼度", b: kyotu.length ? kyotu.join("\n") + "\n→ 共通干支がある＝困難を一緒に耐えられる絆。別れたくても別れにくい"
+                                                   : "共通干支なし。形の上での結びつきは薄め＝秘密を持ち合いやすい。感情面の相性で補う関係" });
+
+      // 4. 支の位相法（全柱総当たり）
+      var isouList = [];
+      pillarsA.forEach(function(pa){ pillarsB.forEach(function(pb){
+        var label = A.name + "の" + pa[0] + "支(" + pa[2] + ")×" + B.name + "の" + pb[0] + "支(" + pb[2] + ")";
+        if (isPair(pa[2],pb[2],SHIGOU)) isouList.push(label + "：支合＝しっくりハマる安定");
+        else if (isPair(pa[2],pb[2],HANKAI)) isouList.push(label + "：半会＝世界が広がる発展");
+        else if (isPair(pa[2],pb[2],TAICHUU)) isouList.push(label + "：対冲＝衝突と変化（長期では補完も）");
+        else {
+          var kg = mtKeiGroup(pa[2],pb[2]);
+          if (kg) isouList.push(label + "：刑（" + kg + "）＝摩擦・鍛え合い");
+          else if (isPair(pa[2],pb[2],GAI)) isouList.push(label + "：害＝本音を飲み込みやすい");
+          else if (isPair(pa[2],pb[2],HA)) isouList.push(label + "：破＝小さなすれ違い（単独なら気にしない）");
+        }
+      }); });
+      if (isTenkokuChichuu(A.dkan,A.dshi,B.dkan,B.dshi)) isouList.unshift("★ 日柱同士が天剋地冲＝最強の衝突と学び。人生を変え合う縁");
+      out.sections.push({ h:"位相法（支の関係）", b: isouList.length ? isouList.join("\n") : "強い位相はなし（中立＝穏やかな関係）" });
+
+      // 5. 親子モードの追加軸
+      if (rel !== 'love') {
+        var parent = (rel === 'oyako_a_parent') ? A : B;
+        var child  = (rel === 'oyako_a_parent') ? B : A;
+        var lines = [];
+        if (isKangou) {
+          lines.push("親子の日干が干合＝魂の共鳴・一心同体型の親子。象徴同士が輝かせ合う理想的な関係（結びつきが強い分、境界線は意識する）");
+        } else {
+          var pr = GOGYOU_REL[STEM_GOGYOU[parent.dkan].g][STEM_GOGYOU[child.dkan].g];
+          if (pr === "比和") lines.push("親子の日干が比和＝似た者同士。理解しやすいが欠点も似て衝突しやすい");
+          else if (pr === "洩") lines.push("親（" + parent.dkan + "）が子（" + child.dkan + "）を生じる＝自然に育てやすい。親が一方的に頑張りすぎないこと");
+          else if (pr === "生") lines.push("子（" + child.dkan + "）が親（" + parent.dkan + "）を生じる＝子が親を支える構図。子の負担に注意");
+          else lines.push("親子の日干が相剋＝緊張感のある関係。ただし反発が子の自我を育て、親を超える力になる");
+        }
+        var shuku = mtShukumeiTenchu(child);
+        if (shuku.length) lines.push("子の宿命天中殺：" + shuku.join("／"));
+        var pMap = {"子丑":"安定系","寅卯":"安定系","申酉":"安定系","午未":"流動系","辰巳":"流動系","戌亥":"流動系"};
+        if (pMap[parent.tenchu] === "流動系") lines.push("親が" + parent.tenchu + "天中殺（流動系）＝子との縁は独特。継がせるより独立させる方が伸びる");
+        else lines.push("親が" + parent.tenchu + "天中殺（安定系）＝後継ぎ・継承の心配は少ない型");
+        out.sections.push({ h:"親子の軸", b: lines.join("\n") });
+      }
+
+      mtRenderAishou(out);
+      mtLastAishou = out;
+    }
+    var mtLastAishou = null;
+
+    function mtRenderAishou(o){
+      var relLabel = o.rel==='love' ? '恋愛・夫婦' : (o.rel==='oyako_a_parent' ? '親子（'+o.A.name+'が親）' : '親子（'+o.B.name+'が親）');
+      var h = '<div class="header"><h2 class="meishi-title">' + o.A.name + ' × ' + o.B.name + '</h2>' +
+              '<p class="meishi-info">' + relLabel + ' の縁</p></div>';
+      function pBox(k){
+        return '<span class="aishou-badge">' + k.name + '：' + k.dkan + k.dshi + '（日）・' + k.mkan + k.mshi + '（月）・' + k.ykan + k.yshi + '（年）・' + k.tenchu + '天中殺</span>';
+      }
+      h += '<div style="margin-bottom:6px;">' + pBox(o.A) + pBox(o.B) + '</div>';
+      o.sections.forEach(function(sec){
+        h += '<div class="aishou-sec"><div class="h">' + sec.h + '</div><div class="b">' + sec.b.replace(/\n/g,'<br>') + '</div></div>';
+      });
+      h += '<div class="kantei-row">' +
+           '<div class="kantei-btn free" onclick="copyAishou(\'free\', this)">☾ 無料相性プロンプト<small>一点に絞る・核心は本鑑定へ</small></div>' +
+           '<div class="kantei-btn paid" onclick="copyAishou(\'paid\', this)">相性本鑑定プロンプト ☗<small>構造から処方まで全部</small></div></div>';
+      var el = document.getElementById('aishou-result');
+      el.innerHTML = h;
+      el.style.display = '';
+      el.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    function buildAishouMD(){
+      var o = mtLastAishou; if (!o) return "";
+      var relLabel = o.rel==='love' ? '恋愛・夫婦の相性' : (o.rel==='oyako_a_parent' ? '親子の相性（'+o.A.name+'が親・'+o.B.name+'が子）' : '親子の相性（'+o.B.name+'が親・'+o.A.name+'が子）');
+      var md = "# 相性鑑定 素材データ：" + o.A.name + " × " + o.B.name + "\n\n";
+      md += "関係：" + relLabel + "\n\n";
+      function person(k){
+        var md2 = "## " + k.name + "（" + k.y + "年" + k.m + "月" + k.d + "日生・" + (k.sex==='M'?'男性':'女性') + "）\n";
+        md2 += "| 日柱 | 月柱 | 年柱 |\n|---|---|---|\n";
+        md2 += "| " + k.dkan + k.dshi + " | " + k.mkan + k.mshi + " | " + k.ykan + k.yshi + " |\n";
+        md2 += "- 天中殺：" + k.tenchu + "\n";
+        if (typeof nikkanCharacter === 'function') {
+          var c = nikkanCharacter(k.dkan, k.dshi);
+          if (c) md2 += "- 日干支の質感：" + c + "\n";
+        }
+        return md2 + "\n";
+      }
+      md += person(o.A) + person(o.B);
+      md += "## 相性の素材\n\n";
+      o.sections.forEach(function(sec){ md += "### " + sec.h + "\n" + sec.b + "\n\n"; });
+      md += "※このデータは素材。教材MD（位相法・天中殺・干合の各章）を読み込んだうえで鑑定文にすること。\n";
+      return md;
+    }
+    function copyAishou(mode, btn){
+      doCopy((mode==='free' ? PROMPT_AISHOU_FREE : PROMPT_AISHOU_PAID) + buildAishouMD(), btn);
+    }
+
     // Enter送信
+
     document.addEventListener('keypress', function(e){
-      if (e.key === 'Enter') calculate();
+      if (e.key === 'Enter') { (mtMode === 'aishou') ? calcAishou() : calculate(); }
     });
   </script>
 </body>
