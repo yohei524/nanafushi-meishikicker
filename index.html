@@ -19,7 +19,7 @@
     }
     .container { max-width: 820px; margin: 0 auto; }
     .card {
-      background: #f5ead0;
+      background: #0b0a10;
       background-image:
         repeating-linear-gradient(0deg, rgba(180,140,80,0.025) 0 1px, transparent 1px 4px),
         repeating-linear-gradient(90deg, rgba(180,140,80,0.025) 0 1px, transparent 1px 4px);
@@ -113,7 +113,7 @@
 
     .sex-row { display: flex; gap: 12px; justify-content: center; margin-top: 8px; }
     .sex-btn {
-      padding: 10px 24px; border: 2px solid #e0e0e0; background: #fff;
+      padding: 10px 24px; border: 2px solid rgba(255,255,255,.15); background: rgba(255,255,255,.06);
       border-radius: 8px; cursor: pointer; font-size: 14px;
     }
     .sex-btn.active {
@@ -171,7 +171,7 @@
       border-radius: 4px;
       padding: 14px 6px;
       text-align: center;
-      background: #fdfbf5;
+      background: rgba(255,255,255,.06);
       min-height: 92px;
       display: flex;
       flex-direction: column;
@@ -206,7 +206,7 @@
     .reading {
       margin-top: 12px;
       padding: 10px 14px;
-      background: #f5efe0;
+      background: rgba(255,255,255,.06);
       border-left: 3px solid #d8b98a;
       font-size: 12px;
       line-height: 1.7;
@@ -225,7 +225,7 @@
     .tag-row { margin: 6px 0; }
     .tag {
       display: inline-block;
-      background: #ede1c8;
+      background: rgba(226,180,106,.12);
       border: 1px solid #c9a878;
       color: #f0d29a;
       font-size: 10px;
@@ -240,7 +240,7 @@
     }
     .kw-honnou {
       display: inline-block;
-      background: #fbe5d6;
+      background: rgba(226,180,106,.16);
       color: #e59ab5;
       font-size: 10px;
       padding: 2px 6px;
@@ -272,7 +272,7 @@
       gap: 6px;
     }
     .hachimon-cell {
-      background: #fdfbf5;
+      background: rgba(255,255,255,.06);
       border: 1px solid #c9a878;
       padding: 12px 4px;
       text-align: center;
@@ -298,11 +298,11 @@
     .shukumei-box {
       margin-top: 16px;
       padding: 16px;
-      background: #fff3cd; border-left: 4px solid #f39c12;
+      background: rgba(226,180,106,.14); border-left: 4px solid #e2b46a;
       border-radius: 8px;
     }
     .shukumei-box.none {
-      background: #d4edda; border-left-color: #27ae60;
+      background: rgba(100,200,140,.14); border-left-color: #6fcf97;
     }
     .shukumei-title { font-weight: bold; margin-bottom: 6px; color: #ffffff; }
     .shukumei-list { list-style: none; padding-left: 0; }
@@ -336,7 +336,7 @@
     .gogyou-cell.moku { background: #27ae60; grid-column: 1; grid-row: 2; }
     .gogyou-cell.ka { background: #e74c3c; grid-column: 2; grid-row: 1; }
     .gogyou-cell.do { background: #d68910; grid-column: 2; grid-row: 2; }
-    .gogyou-cell.kon { background: #b2b9bf; color: #333; grid-column: 3; grid-row: 2; }
+    .gogyou-cell.kon { background: rgba(214,220,228,.30); color: #f2f4f8; grid-column: 3; grid-row: 2; }
     .gogyou-cell.sui { background: #3498db; grid-column: 2; grid-row: 3; }
     .gogyou-cell.lack { outline: 3px dashed #e08a8a; outline-offset: 2px; opacity: 0.55; }
     .gogyou-label { font-size: 13px; opacity: 0.95; }
@@ -357,10 +357,10 @@
     /* 大運表 */
     .daiun-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     .daiun-table th, .daiun-table td {
-      border: 1px solid #ddd; padding: 8px 6px; text-align: center;
+      border: 1px solid rgba(255,255,255,.12); padding: 8px 6px; text-align: center;
     }
     .daiun-table th { background: rgba(255,255,255,.06); font-weight: bold; }
-    .daiun-table tr.current { background: #fff3cd; font-weight: bold; }
+    .daiun-table tr.current { background: rgba(226,180,106,.20); font-weight: bold; }
     .daiun-table .age-cell { color: #9a94a8; }
 
     /* 運気表（大運・年運・月運共通） */
@@ -371,13 +371,13 @@
     .unki-table col.col-jushou { width: 14%; }
     .unki-table col.col-isou { width: 40%; }
     .unki-table th, .unki-table td {
-      border: 1px solid #ddd; padding: 8px 4px; text-align: center; vertical-align: middle;
+      border: 1px solid rgba(255,255,255,.12); padding: 8px 4px; text-align: center; vertical-align: middle;
       word-break: keep-all; overflow-wrap: break-word;
     }
     .unki-table th { background: rgba(255,255,255,.06); font-weight: bold; font-size: 12px; }
-    .unki-table tr.current { background: #fff8d4; font-weight: bold; }
-    .unki-table tr.tenchu { background: #ffe5e5; }
-    .unki-table tr.current.tenchu { background: #ffd9b3; }
+    .unki-table tr.current { background: rgba(226,180,106,.20); font-weight: bold; }
+    .unki-table tr.tenchu { background: rgba(229,120,140,.16); }
+    .unki-table tr.current.tenchu { background: rgba(233,150,90,.28); }
     .unki-table .period-cell { color: #b7b1c4; font-size: 12px; }
     .unki-table .kanshi-cell { font-size: 16px; font-weight: bold; color: #ffffff; }
     .unki-table .star-cell { font-size: 12px; white-space: nowrap; }
@@ -386,17 +386,17 @@
     .unki-table .isou-target { color: #b7b1c4; }
     .isou-yoshi { color: #9db9f5; font-weight: bold; } /* 干合・支合・半会・大半会・方三位 */
     .isou-kyoshi { color: #ef8b7a; font-weight: bold; } /* 害・対冲・刑・破 */
-    .isou-tokushu { color: #d35400; font-weight: bold; background: #fdebd0; padding: 1px 4px; border-radius: 3px; }/* 天剋地冲・納音・律音 */
+    .isou-tokushu { color: #f5b06a; font-weight: bold; background: rgba(233,150,90,.20); padding: 1px 4px; border-radius: 3px; }/* 天剋地冲・納音・律音 */
     .tenchu-tag { display: inline-block; background: #ef8b7a; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 3px; margin-bottom: 4px; }
 
     /* 読みコメント */
     .comment-area {
-      background: #fff8e1;
+      background: rgba(226,180,106,.10);
       border-radius: 8px;
       padding: 16px;
       font-size: 14px;
       line-height: 1.9;
-      color: #333;
+      color: #e9e6ef;
     }
     .comment-area p { margin-bottom: 8px; }
 
@@ -2010,10 +2010,10 @@
         document.getElementById('hm-south-v').textContent = hmType.values["南"];
         // 最大方位をハイライト
         ["east","west","center","north","south"].forEach(function(d){
-          document.getElementById('hm-'+d).style.background = "#fdfbf5";
+          document.getElementById('hm-'+d).style.background = "rgba(255,255,255,.10)";
         });
         var dirToId = {"東":"east","西":"west","中央":"center","北":"north","南":"south"};
-        document.getElementById('hm-'+dirToId[hmType.dir]).style.background = "#fbe5d6";
+        document.getElementById('hm-'+dirToId[hmType.dir]).style.background = "rgba(226,180,106,.30)";
         var hmEl = document.getElementById('hachimon-detail');
         if (hmEl) {
           hmEl.innerHTML = "<strong>八門法："+hmType.type.name+"</strong>("+hmType.dir+"最大／"+hmType.type.essence+")<br>" +
