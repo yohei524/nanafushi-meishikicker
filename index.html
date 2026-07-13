@@ -15,11 +15,11 @@
         radial-gradient(at 80% 70%, rgba(160,130,80,0.10) 0%, transparent 50%);
       min-height: 100vh;
       padding: 16px;
-      color: #3a2d1e;
+      color: #e9e6ef;
     }
     .container { max-width: 820px; margin: 0 auto; }
     .card {
-      background: #fbf4e2;
+      background: #f5ead0;
       background-image:
         repeating-linear-gradient(0deg, rgba(180,140,80,0.025) 0 1px, transparent 1px 4px),
         repeating-linear-gradient(90deg, rgba(180,140,80,0.025) 0 1px, transparent 1px 4px);
@@ -31,12 +31,12 @@
     .header { text-align: center; margin-bottom: 24px; }
     .header h1 {
       font-family: "YuMincho", "Hiragino Mincho ProN", serif;
-      font-size: 19px; color: #3a2d1e; font-weight: 500;
+      font-size: 19px; color: #e9e6ef; font-weight: 500;
       letter-spacing: 2px; line-height: 1.6;
     }
     .meishi-header { text-align: center; padding: 18px 24px; }
-    .meishi-title { font-size: 20px; color: #5a3a1e; font-weight: 500; margin-bottom: 6px; letter-spacing: 1px; }
-    .meishi-info { font-size: 13px; color: #7a6a4a; }
+    .meishi-title { font-size: 20px; color: #f0d29a; font-weight: 500; margin-bottom: 6px; letter-spacing: 1px; }
+    .meishi-info { font-size: 13px; color: #9a94a8; }
     /* 隠しコマンド風コピー印(㐂の朱印デザイン) */
     .copy-seal {
       position: absolute;
@@ -45,7 +45,7 @@
       width: 46px;
       height: 46px;
       background: #a83a2c;
-      color: #fbf4e2;
+      color: #f5ead0;
       border: 2px solid #8a2e22;
       border-radius: 3px;
       display: flex;
@@ -86,15 +86,15 @@
     .input-group { margin-bottom: 14px; }
     .input-label {
       display: block; margin-bottom: 8px;
-      font-weight: bold; font-size: 14px; color: #555;
+      font-weight: bold; font-size: 14px; color: #b7b1c4;
     }
     .section-title {
-      font-size: 17px; color: #5a3a1e; font-weight: 500;
+      font-size: 17px; color: #f0d29a; font-weight: 500;
       border-bottom: 1px solid #c9a878; padding-bottom: 6px;
       margin-bottom: 14px; letter-spacing: 1px;
     }
     .section-title::before {
-      content: "▌"; color: #a64463; margin-right: 6px;
+      content: "▌"; color: #e59ab5; margin-right: 6px;
     }
     .date-row {
       display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap;
@@ -109,7 +109,7 @@
     .date-input:focus { outline: none; border-color: #667eea; }
     .date-input::-webkit-outer-spin-button,
     .date-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    .date-label { font-size: 14px; color: #666; }
+    .date-label { font-size: 14px; color: #9a94a8; }
 
     .sex-row { display: flex; gap: 12px; justify-content: center; margin-top: 8px; }
     .sex-btn {
@@ -139,7 +139,7 @@
 
     .result-area { display: none; }
     .section-title {
-      font-size: 18px; font-weight: bold; color: #0b1f3a;
+      font-size: 18px; font-weight: bold; color: #ffffff;
       border-left: 4px solid #667eea; padding-left: 12px;
       margin-bottom: 16px;
     }
@@ -152,11 +152,11 @@
     .ininsen-table th, .ininsen-table td {
       border: 1px solid #ddd; padding: 12px 8px;
     }
-    .ininsen-table th { background: #f8f9fa; font-weight: bold; color: #555; }
-    .ininsen-table .row-label { background: #f0f3f7; font-size: 12px; color: #888; }
-    .kan-cell { font-size: 24px; font-weight: bold; color: #0b1f3a; }
-    .shi-cell { font-size: 24px; font-weight: bold; color: #c0392b; }
-    .zoukan-cell { font-size: 14px; color: #555; line-height: 1.6; }
+    .ininsen-table th { background: rgba(255,255,255,.06); font-weight: bold; color: #b7b1c4; }
+    .ininsen-table .row-label { background: rgba(255,255,255,.04); font-size: 12px; color: #9a94a8; }
+    .kan-cell { font-size: 24px; font-weight: bold; color: #ffffff; }
+    .shi-cell { font-size: 24px; font-weight: bold; color: #ef8b7a; }
+    .zoukan-cell { font-size: 14px; color: #b7b1c4; line-height: 1.6; }
 
     /* 人体図3x3グリッド */
     .jintai-grid {
@@ -177,57 +177,57 @@
       flex-direction: column;
       justify-content: center;
     }
-    .jintai-cell.shujou { background: #fef0f0; border-color: #e4a8a8; }
-    .jintai-cell.jushou { background: #fff7e8; border-color: #d6b87a; }
-    .jintai-cell.center { background: #fce4ec; border-color: #c97a8e; box-shadow: 0 0 0 2px #fce4ec inset; }
+    .jintai-cell.shujou { background: rgba(229,154,181,.10); border-color: rgba(229,154,181,.4); }
+    .jintai-cell.jushou { background: rgba(226,180,106,.10); border-color: rgba(226,180,106,.4); }
+    .jintai-cell.center { background: rgba(229,154,181,.16); border-color: #e6a9bd; box-shadow: 0 0 0 2px rgba(229,154,181,.16) inset; }
     .jintai-label {
       font-size: 12px;
-      color: #b08960;
+      color: #d8b98a;
       margin-bottom: 6px;
       letter-spacing: 0.5px;
     }
-    .jintai-cell.shujou .jintai-label { color: #c97a8e; }
-    .jintai-cell.center .jintai-label { color: #a64463; font-weight: bold; }
+    .jintai-cell.shujou .jintai-label { color: #e6a9bd; }
+    .jintai-cell.center .jintai-label { color: #e59ab5; font-weight: bold; }
     .jintai-label small {
       display: block;
       font-size: 9px;
-      color: #999;
+      color: #8d879e;
       margin-top: 2px;
       font-weight: normal;
     }
     .jintai-name {
       font-size: 17px;
       font-weight: bold;
-      color: #2a2a2a;
+      color: #e9e6ef;
       text-decoration: underline;
       text-underline-offset: 3px;
     }
-    .jintai-sub { font-size: 10px; color: #999; margin-top: 2px; }
+    .jintai-sub { font-size: 10px; color: #8d879e; margin-top: 2px; }
     .reading {
       margin-top: 12px;
       padding: 10px 14px;
       background: #f5efe0;
-      border-left: 3px solid #b08960;
+      border-left: 3px solid #d8b98a;
       font-size: 12px;
       line-height: 1.7;
-      color: #4a3a2a;
+      color: #cfcadb;
       border-radius: 0 4px 4px 0;
     }
     .nkkanshi-head {
-      font-size: 15px; color: #5a3a1e; font-weight: bold; margin-bottom: 6px;
+      font-size: 15px; color: #f0d29a; font-weight: bold; margin-bottom: 6px;
     }
-    .nkkanshi-name { color: #a64463; margin-left: 4px; }
-    .nkkanshi-alt { color: #999; font-size: 11px; font-weight: normal; margin-left: 8px; }
-    .nkkanshi-meta { font-size: 11px; color: #7a6a4a; margin: 3px 0 8px; background: rgba(122,106,74,0.08); padding: 4px 8px; border-radius: 3px; }
-    .nkkanshi-line { font-size: 12px; color: #4a3a2a; margin: 5px 0; line-height: 1.7; }
-    .nkkanshi-line.improve { color: #2c5dab; }
-    .nkkanshi-paragraph { font-size: 12.5px; color: #3a2d1e; line-height: 1.8; margin: 8px 0; text-indent: 1em; }
+    .nkkanshi-name { color: #e59ab5; margin-left: 4px; }
+    .nkkanshi-alt { color: #8d879e; font-size: 11px; font-weight: normal; margin-left: 8px; }
+    .nkkanshi-meta { font-size: 11px; color: #9a94a8; margin: 3px 0 8px; background: rgba(122,106,74,0.08); padding: 4px 8px; border-radius: 3px; }
+    .nkkanshi-line { font-size: 12px; color: #cfcadb; margin: 5px 0; line-height: 1.7; }
+    .nkkanshi-line.improve { color: #9db9f5; }
+    .nkkanshi-paragraph { font-size: 12.5px; color: #e9e6ef; line-height: 1.8; margin: 8px 0; text-indent: 1em; }
     .tag-row { margin: 6px 0; }
     .tag {
       display: inline-block;
       background: #ede1c8;
       border: 1px solid #c9a878;
-      color: #5a3a1e;
+      color: #f0d29a;
       font-size: 10px;
       padding: 2px 7px;
       margin: 2px 3px 2px 0;
@@ -235,13 +235,13 @@
     }
     /* セクション内のキーワード補足 */
     .kw-strip {
-      font-size: 11px; color: #7a6a4a; margin-top: 4px;
+      font-size: 11px; color: #9a94a8; margin-top: 4px;
       letter-spacing: 0.3px;
     }
     .kw-honnou {
       display: inline-block;
       background: #fbe5d6;
-      color: #a64463;
+      color: #e59ab5;
       font-size: 10px;
       padding: 2px 6px;
       border-radius: 3px;
@@ -259,11 +259,11 @@
       display: inline-block;
       min-width: 50px;
       font-size: 10px;
-      color: #7a6a4a;
+      color: #9a94a8;
       margin-right: 6px;
     }
     .jd-row strong {
-      color: #5a3a1e;
+      color: #f0d29a;
       margin-right: 6px;
     }
     .hachimon-grid {
@@ -278,9 +278,9 @@
       text-align: center;
       border-radius: 4px;
       font-size: 13px;
-      color: #5a3a1e;
+      color: #f0d29a;
     }
-    .hachimon-cell span { display: block; font-size: 18px; font-weight: bold; margin-top: 2px; color: #a64463; }
+    .hachimon-cell span { display: block; font-size: 18px; font-weight: bold; margin-top: 2px; color: #e59ab5; }
 
     /* 天中殺ボックス */
     .tenchu-box {
@@ -304,11 +304,11 @@
     .shukumei-box.none {
       background: #d4edda; border-left-color: #27ae60;
     }
-    .shukumei-title { font-weight: bold; margin-bottom: 6px; color: #0b1f3a; }
+    .shukumei-title { font-weight: bold; margin-bottom: 6px; color: #ffffff; }
     .shukumei-list { list-style: none; padding-left: 0; }
     .shukumei-list li {
       font-size: 13px; padding: 4px 0;
-      color: #555;
+      color: #b7b1c4;
     }
     .shukumei-list li::before { content: "● "; color: #f39c12; }
 
@@ -338,30 +338,30 @@
     .gogyou-cell.do { background: #d68910; grid-column: 2; grid-row: 2; }
     .gogyou-cell.kon { background: #b2b9bf; color: #333; grid-column: 3; grid-row: 2; }
     .gogyou-cell.sui { background: #3498db; grid-column: 2; grid-row: 3; }
-    .gogyou-cell.lack { outline: 3px dashed #d44a3c; outline-offset: 2px; opacity: 0.55; }
+    .gogyou-cell.lack { outline: 3px dashed #e08a8a; outline-offset: 2px; opacity: 0.55; }
     .gogyou-label { font-size: 13px; opacity: 0.95; }
     .gogyou-value { font-size: 22px; font-weight: bold; margin-top: 4px; }
-    .gogyou-lack-note { font-size: 11px; color: #d44a3c; margin-top: 4px; text-align: center; }
+    .gogyou-lack-note { font-size: 11px; color: #e08a8a; margin-top: 4px; text-align: center; }
 
     /* 位相法 */
     .isou-list { padding-left: 0; list-style: none; }
     .isou-list li {
-      background: #f8f9fa; padding: 10px 14px;
+      background: rgba(255,255,255,.06); padding: 10px 14px;
       margin-bottom: 6px; border-radius: 6px;
       border-left: 3px solid #667eea;
       font-size: 14px;
     }
     .isou-list li.strong { border-left-color: #e74c3c; }
-    .isou-list li.empty { background: #f0f3f7; color: #888; text-align: center; }
+    .isou-list li.empty { background: rgba(255,255,255,.04); color: #9a94a8; text-align: center; }
 
     /* 大運表 */
     .daiun-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     .daiun-table th, .daiun-table td {
       border: 1px solid #ddd; padding: 8px 6px; text-align: center;
     }
-    .daiun-table th { background: #f8f9fa; font-weight: bold; }
+    .daiun-table th { background: rgba(255,255,255,.06); font-weight: bold; }
     .daiun-table tr.current { background: #fff3cd; font-weight: bold; }
-    .daiun-table .age-cell { color: #888; }
+    .daiun-table .age-cell { color: #9a94a8; }
 
     /* 運気表（大運・年運・月運共通） */
     .unki-table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
@@ -374,20 +374,20 @@
       border: 1px solid #ddd; padding: 8px 4px; text-align: center; vertical-align: middle;
       word-break: keep-all; overflow-wrap: break-word;
     }
-    .unki-table th { background: #f8f9fa; font-weight: bold; font-size: 12px; }
+    .unki-table th { background: rgba(255,255,255,.06); font-weight: bold; font-size: 12px; }
     .unki-table tr.current { background: #fff8d4; font-weight: bold; }
     .unki-table tr.tenchu { background: #ffe5e5; }
     .unki-table tr.current.tenchu { background: #ffd9b3; }
-    .unki-table .period-cell { color: #555; font-size: 12px; }
-    .unki-table .kanshi-cell { font-size: 16px; font-weight: bold; color: #0b1f3a; }
+    .unki-table .period-cell { color: #b7b1c4; font-size: 12px; }
+    .unki-table .kanshi-cell { font-size: 16px; font-weight: bold; color: #ffffff; }
     .unki-table .star-cell { font-size: 12px; white-space: nowrap; }
     .unki-table .isou-cell { font-size: 11px; text-align: left; line-height: 1.5; }
     .unki-table .isou-line { display: block; margin: 1px 0; }
-    .unki-table .isou-target { color: #555; }
-    .isou-yoshi { color: #2c5dab; font-weight: bold; } /* 干合・支合・半会・大半会・方三位 */
-    .isou-kyoshi { color: #c0392b; font-weight: bold; } /* 害・対冲・刑・破 */
+    .unki-table .isou-target { color: #b7b1c4; }
+    .isou-yoshi { color: #9db9f5; font-weight: bold; } /* 干合・支合・半会・大半会・方三位 */
+    .isou-kyoshi { color: #ef8b7a; font-weight: bold; } /* 害・対冲・刑・破 */
     .isou-tokushu { color: #d35400; font-weight: bold; background: #fdebd0; padding: 1px 4px; border-radius: 3px; }/* 天剋地冲・納音・律音 */
-    .tenchu-tag { display: inline-block; background: #c0392b; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 3px; margin-bottom: 4px; }
+    .tenchu-tag { display: inline-block; background: #ef8b7a; color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 3px; margin-bottom: 4px; }
 
     /* 読みコメント */
     .comment-area {
@@ -400,7 +400,7 @@
     }
     .comment-area p { margin-bottom: 8px; }
 
-    .meta { font-size: 11px; color: #999; text-align: right; margin-top: 8px; }
+    .meta { font-size: 11px; color: #8d879e; text-align: right; margin-top: 8px; }
 
     @media (max-width: 480px) {
       .jinsei-figure { max-width: 280px; }
@@ -618,7 +618,7 @@
         <p class="meishi-info" id="res-info"></p>
         <div class="copy-seal" onclick="copyForClaude()" title="">㐂</div>
         <div class="kantei-row">
-          <div class="kantei-btn free" onclick="copyKantei('free', this)">☾ 無料鑑定プロンプト<small>メイト式・核心は本鑑定に残す</small></div>
+          <div class="kantei-btn free" onclick="copyKantei('free', this)">☾ 無料鑑定プロンプト<small>㐂式・核心は本鑑定に残す</small></div>
           <div class="kantei-btn paid" onclick="copyKantei('paid', this)">本鑑定プロンプト ☗<small>全開・対処法と処方まで</small></div>
         </div>
         <div class="copy-msg" id="copy-msg"></div>
@@ -770,7 +770,7 @@
         <p style="font-size:13px;color:#333;margin-top:12px;text-align:center;">
           総エネルギー値: <strong id="suuri-total">0</strong>
         </p>
-        <p style="font-size:12px;color:#666;margin-top:6px;text-align:center;" id="gogyou-comment"></p>
+        <p style="font-size:12px;color:#9a94a8;margin-top:6px;text-align:center;" id="gogyou-comment"></p>
         <div class="reading" id="suuri-energy" style="margin-top:8px;"></div>
         <div class="reading" id="suuri-fusoku" style="margin-top:8px;"></div>
       </div>
@@ -832,7 +832,7 @@
       <!-- 大運表 -->
       <div class="card">
         <div class="section-title">大運表</div>
-        <div id="daiun-start-info" style="font-size:12px;color:#7a6a4a;margin-bottom:10px;"></div>
+        <div id="daiun-start-info" style="font-size:12px;color:#9a94a8;margin-bottom:10px;"></div>
         <table class="unki-table">
           <colgroup>
             <col class="col-period"><col class="col-kanshi"><col class="col-joushou"><col class="col-jushou"><col class="col-isou">
@@ -1831,7 +1831,7 @@
             }
             nkReadEl.innerHTML = headHtml + metaHtml + bodyHtml;
           } else {
-            nkReadEl.innerHTML = "<strong>"+nkKey+"</strong><div style='font-size:11px;color:#999;margin-top:4px;'>※詳細データ未登録</div>";
+            nkReadEl.innerHTML = "<strong>"+nkKey+"</strong><div style='font-size:11px;color:#8d879e;margin-top:4px;'>※詳細データ未登録</div>";
           }
         }
 
@@ -1928,7 +1928,7 @@
           tpEl.innerHTML =
             "<strong>直近の年天中殺</strong>："+(yearTenchuStart? yearTenchuStart+"年〜"+yearTenchuEnd+"年" : "—")+
             "<br><strong>直近の月天中殺</strong>："+(monthTenchuStart? monthTenchuStart+"月〜"+monthTenchuEnd+"月" : "—")+
-            "<div style='font-size:11px;color:#7a6a4a;margin-top:4px;'>※日天中殺は月運表に「日天中殺」フラグで表示</div>";
+            "<div style='font-size:11px;color:#9a94a8;margin-top:4px;'>※日天中殺は月運表に「日天中殺」フラグで表示</div>";
         }
 
         var shBox = document.getElementById('shukumei-box');
@@ -2052,10 +2052,10 @@
         var sEl = document.getElementById('sainou-detail');
         if (sEl) {
           sEl.innerHTML = "<strong>才能星(=剋数最大の主星)</strong>："+sainou.talent+"<br>" +
-            "<span style='font-size:11px;color:#666;'>※参考:伴星(ご先祖星)は"+(hanseiStar||"—")+"</span><br>" +
-            "<strong>型</strong>："+sainou.type+"<span style='font-size:11px;color:#666;'> (剋線分布 "+sainou.kokuDist+" / 総剋線 "+sainou.totalKoku+")</span><br>" +
+            "<span style='font-size:11px;color:#9a94a8;'>※参考:伴星(ご先祖星)は"+(hanseiStar||"—")+"</span><br>" +
+            "<strong>型</strong>："+sainou.type+"<span style='font-size:11px;color:#9a94a8;'> (剋線分布 "+sainou.kokuDist+" / 総剋線 "+sainou.totalKoku+")</span><br>" +
             "<span style='font-size:11px;'>"+sainou.typeDesc+"</span>" +
-            "<div style='margin-top:6px;font-size:11px;color:#555;'>剋線詳細："+sainou.kokuDetail+"</div>" +
+            "<div style='margin-top:6px;font-size:11px;color:#b7b1c4;'>剋線詳細："+sainou.kokuDetail+"</div>" +
             "<div style='margin-top:6px;'><strong>領域</strong>："+sainou.area+" — <span style='font-size:11px;'>"+sainou.areaDesc+"</span></div>";
         }
 
@@ -2114,18 +2114,18 @@
               var html = "<span class='" + classifyIsou(t) + "'>" + t + "</span>";
               if (t === "干合") {
                 var henka = getKangouHenkaForLabel(label);
-                if (henka) html += "<span style='font-size:11px;color:#a64463;margin-left:4px;'>→ "+henka+"性に変化</span>";
+                if (henka) html += "<span style='font-size:11px;color:#e59ab5;margin-left:4px;'>→ "+henka+"性に変化</span>";
               }
               return html;
             }).join("、");
             // 各位相の解説を集約
             var detailLines = types.map(function(t){
               var d = ISOU_DETAIL[t];
-              return d ? "<span style='font-size:11px;color:#4a3a2a;'>・"+t+"：" + d.body + "</span>" : "";
+              return d ? "<span style='font-size:11px;color:#cfcadb;'>・"+t+"：" + d.body + "</span>" : "";
             }).filter(function(s){return s;}).join("<br>");
             var li = document.createElement('li');
             li.innerHTML = "<strong>"+labelDisplay[label]+"：</strong>"+typeHtmls +
-              "<div style='font-size:11px;color:#7a6a4a;margin-top:3px;'>→ "+labelMeaning[label]+"</div>" +
+              "<div style='font-size:11px;color:#9a94a8;margin-top:3px;'>→ "+labelMeaning[label]+"</div>" +
               (detailLines ? "<div style='margin-top:4px;line-height:1.6;'>"+detailLines+"</div>" : "");
             iList.appendChild(li);
           });
@@ -2141,7 +2141,7 @@
 
         // 位相法フォーマット関数：detectKoutenIsouの結果をHTMLに整形
         function formatIsou(isouList) {
-          if (isouList.length === 0) return "<span style='color:#999;'>—</span>";
+          if (isouList.length === 0) return "<span style='color:#8d879e;'>—</span>";
           // 「年柱:害」「月柱:干合」のように柱別にまとめる
           var byTarget = {};
           isouList.forEach(function(r){
@@ -3275,7 +3275,7 @@
       } else {
         ret += "<pre style='font-size:11px;line-height:1.5;background:rgba(0,0,0,0.04);padding:8px;border-radius:4px;margin-top:6px;'>" + rows.join("\n") + "</pre>";
       }
-      ret += "<div style='font-size:10px;color:#888;margin-top:4px;'>※天中殺の時期は別途避けるべし(年・月・日)</div>";
+      ret += "<div style='font-size:10px;color:#9a94a8;margin-top:4px;'>※天中殺の時期は別途避けるべし(年・月・日)</div>";
       return ret;
     }
 
