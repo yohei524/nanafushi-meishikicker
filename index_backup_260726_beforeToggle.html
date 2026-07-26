@@ -138,138 +138,6 @@
     .error { color: #e74c3c; font-size: 14px; text-align: center; margin-top: 12px; min-height: 20px; }
 
     .result-area { display: none; }
-
-    /* ===== モードトグル（お客さん用 / 占い師用 / 全部）260726 ===== */
-    .mode-toggle {
-      display: flex;
-      gap: 6px;
-      justify-content: center;
-      margin: 12px auto 20px;
-      max-width: 520px;
-      background: rgba(11,10,16,0.6);
-      border: 1px solid #4a3f2a;
-      border-radius: 999px;
-      padding: 4px;
-    }
-    .mode-toggle button {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: #b8b0c0;
-      padding: 10px 8px;
-      font-size: 13px;
-      font-family: inherit;
-      font-weight: 500;
-      border-radius: 999px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      letter-spacing: 0.5px;
-    }
-    .mode-toggle button:hover { color: #f0d29a; }
-    .mode-toggle button.active {
-      background: #a83a2c;
-      color: #f5ead0;
-      box-shadow: 0 2px 6px rgba(168,58,44,0.35);
-    }
-    .mode-toggle .mode-hint {
-      display: block;
-      font-size: 10px;
-      color: #7a7080;
-      text-align: center;
-      margin-top: 8px;
-      letter-spacing: 0.8px;
-    }
-    /* モード別の表示制御 */
-    body[data-view-mode="customer"] [data-mode="pro"] { display: none !important; }
-    body[data-view-mode="pro"] [data-mode="customer-only"] { display: none !important; }
-    /* both = 何も隠さない（デフォルト） */
-
-    /* 占い師台本カード */
-    .daihon-card {
-      background: linear-gradient(180deg, #1a1520 0%, #0e0b14 100%);
-      border: 1px solid #6b5a3a;
-      border-radius: 6px;
-      padding: 24px 22px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 12px rgba(60,40,20,0.3), inset 0 0 30px rgba(200,160,90,0.04);
-    }
-    .daihon-card h3 {
-      color: #f0d29a;
-      font-size: 16px;
-      font-weight: 500;
-      letter-spacing: 1.5px;
-      border-left: 3px solid #a83a2c;
-      padding-left: 10px;
-      margin: 20px 0 12px;
-    }
-    .daihon-card h3:first-child { margin-top: 0; }
-    .daihon-card .daihon-lead {
-      color: #d0c8a8;
-      font-size: 13px;
-      margin-bottom: 20px;
-      padding-bottom: 12px;
-      border-bottom: 1px dashed #4a3f2a;
-      letter-spacing: 0.5px;
-    }
-    .daihon-card .daihon-block {
-      color: #e9e6ef;
-      font-size: 15px;
-      line-height: 2;
-      margin-bottom: 6px;
-      letter-spacing: 0.6px;
-    }
-    .daihon-card .daihon-block .star-name {
-      color: #f0d29a;
-      font-weight: 600;
-      margin-right: 4px;
-    }
-    .daihon-card .daihon-block .plus-line {
-      display: block;
-      color: #a8d0b8;
-      font-size: 13px;
-      margin: 4px 0 2px 1em;
-      padding-left: 8px;
-      border-left: 2px solid rgba(120,180,140,0.3);
-    }
-    .daihon-card .daihon-block .minus-line {
-      display: block;
-      color: #d0a8a8;
-      font-size: 13px;
-      margin: 2px 0 6px 1em;
-      padding-left: 8px;
-      border-left: 2px solid rgba(180,120,120,0.3);
-    }
-    .daihon-card .daihon-uraside {
-      margin-top: 24px;
-      padding: 14px 16px;
-      background: rgba(168,58,44,0.08);
-      border: 1px dashed #6b3a2a;
-      border-radius: 4px;
-    }
-    .daihon-card .daihon-uraside .ura-badge {
-      display: inline-block;
-      background: #6b3a2a;
-      color: #f5ead0;
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 3px;
-      margin-bottom: 8px;
-      letter-spacing: 1px;
-    }
-    .daihon-card .daihon-uraside .ura-note {
-      color: #b8a890;
-      font-size: 12px;
-      line-height: 1.7;
-    }
-    .daihon-print-hint {
-      color: #7a7080;
-      font-size: 11px;
-      text-align: center;
-      margin-top: -6px;
-      margin-bottom: 12px;
-      letter-spacing: 0.5px;
-    }
-
     .section-title {
       font-size: 18px; font-weight: bold; color: #ffffff;
       border-left: 4px solid #667eea; padding-left: 12px;
@@ -792,38 +660,20 @@
 
     <div class="result-area" id="result">
 
-      <!-- ===== モードトグル（260726） ===== -->
-      <div class="mode-toggle" role="tablist">
-        <button type="button" class="active" data-mode-btn="both" onclick="switchViewMode('both')">📖 全部</button>
-        <button type="button" data-mode-btn="customer" onclick="switchViewMode('customer')">👥 お客さん画面</button>
-        <button type="button" data-mode-btn="pro" onclick="switchViewMode('pro')">🕯 占い師の台本</button>
-      </div>
-      <div class="mode-hint" id="mode-hint">全部：内部で使う全情報を表示（既定）</div>
-
       <!-- 基本情報 -->
       <div class="card meishi-header">
         <h2 class="meishi-title" id="res-name-title"></h2>
         <p class="meishi-info" id="res-info"></p>
-        <div class="copy-seal" onclick="copyForClaude()" title="" data-mode="pro">㐂</div>
-        <div class="kantei-row" data-mode="pro">
+        <div class="copy-seal" onclick="copyForClaude()" title="">㐂</div>
+        <div class="kantei-row">
           <div class="kantei-btn free" onclick="copyKantei('free', this)">☾ 無料鑑定プロンプト<small>㐂式・核心は本鑑定に残す</small></div>
           <div class="kantei-btn paid" onclick="copyKantei('paid', this)">本鑑定プロンプト ☗<small>全開・対処法と処方まで</small></div>
         </div>
         <div class="copy-msg" id="copy-msg"></div>
       </div>
 
-      <!-- ===== 占い師用：読み上げ台本（pro/both のとき表示） ===== -->
-      <div class="daihon-card" id="daihon-area" data-mode="pro" style="display:none;">
-        <div class="daihon-lead" id="daihon-lead"></div>
-        <div id="daihon-body"></div>
-        <div class="daihon-uraside" id="daihon-uraside" style="display:none;">
-          <span class="ura-badge">裏側情報・本人告知非推奨</span>
-          <div class="ura-note" id="daihon-uraside-body"></div>
-        </div>
-      </div>
-
       <!-- 陰占 -->
-      <div class="card" data-mode="pro">
+      <div class="card">
         <table class="ininsen-table">
           <thead>
             <tr>
@@ -848,7 +698,7 @@
             </tr>
           </tbody>
         </table>
-        <div class="reading" id="nikkanshi-reading" data-mode="pro"></div>
+        <div class="reading" id="nikkanshi-reading"></div>
       </div>
 
       <!-- 人体図 -->
@@ -894,7 +744,7 @@
             <div class="jintai-name" id="cell-chunen">-</div>
           </div>
         </div>
-        <div id="jintai-detail" class="jintai-detail" data-mode="pro"></div>
+        <div id="jintai-detail" class="jintai-detail"></div>
       </div>
 
       <!-- 天中殺 -->
@@ -941,7 +791,7 @@
       </div>
 
       <!-- 数理法（蔵干含む正式計算） -->
-      <div class="card" data-mode="pro">
+      <div class="card">
         <div class="section-title">数理法（エネルギー値・蔵干含む）</div>
         <div class="gogyou-grid">
           <div class="gogyou-cell moku">
@@ -974,7 +824,7 @@
       </div>
 
       <!-- 八門法・気図法 -->
-      <div class="card" data-mode="pro">
+      <div class="card">
         <div class="section-title">八門法・気図法</div>
         <div class="hachimon-grid">
           <div class="hachimon-cell" id="hm-east">東 <span id="hm-east-v">0</span></div>
@@ -988,19 +838,19 @@
       </div>
 
       <!-- 調候守護神 -->
-      <div class="card" data-mode="pro">
+      <div class="card">
         <div class="section-title">調候守護神</div>
         <div class="reading" id="chouko-detail"></div>
       </div>
 
       <!-- 才能占技 -->
-      <div class="card" data-mode="pro">
+      <div class="card">
         <div class="section-title">才能占技</div>
         <div class="reading" id="sainou-detail"></div>
       </div>
 
       <!-- 人生テーマ -->
-      <div class="card" data-mode="pro">
+      <div class="card">
         <div class="section-title">人生テーマ</div>
         <div class="reading" id="theme-renai"></div>
         <div class="reading" id="theme-marriage" style="margin-top:6px;"></div>
@@ -1010,31 +860,25 @@
       </div>
 
       <!-- 適職占技 -->
-      <div class="card" data-mode="pro">
+      <div class="card">
         <div class="section-title">適職占技</div>
         <div class="reading" id="tekishoku-detail"></div>
       </div>
 
       <!-- 流動占技 -->
-      <div class="card" data-mode="pro">
+      <div class="card">
         <div class="section-title">流動占技(スタートの好機)</div>
         <div class="reading" id="ryudo-detail"></div>
       </div>
 
       <!-- 命式内位相法 -->
-      <div class="card" data-mode="pro">
+      <div class="card">
         <div class="section-title">命式内の位相法</div>
         <ul class="isou-list" id="isou-list"></ul>
       </div>
 
-      <!-- 大運の要点（お客さん用・今どこにいるか） -->
-      <div class="card" data-mode="customer-only" id="daiun-arrow-card" style="display:none;">
-        <div class="section-title">今の大運 → 次の大運</div>
-        <div id="daiun-arrow-body" style="text-align:center;padding:10px 6px;"></div>
-      </div>
-
       <!-- 大運表 -->
-      <div class="card" data-mode="pro">
+      <div class="card">
         <div class="section-title">大運表</div>
         <div id="daiun-start-info" style="font-size:12px;color:#9a94a8;margin-bottom:10px;"></div>
         <table class="unki-table">
@@ -1051,7 +895,7 @@
       </div>
 
       <!-- 年運表 -->
-      <div class="card" data-mode="pro">
+      <div class="card">
         <div class="section-title">年運表</div>
         <table class="unki-table">
           <colgroup>
@@ -1067,7 +911,7 @@
       </div>
 
       <!-- 月運表 -->
-      <div class="card" data-mode="pro">
+      <div class="card">
         <div class="section-title">月運表</div>
         <table class="unki-table">
           <colgroup>
@@ -1083,7 +927,7 @@
       </div>
 
       <!-- 日運表 -->
-      <div class="card" data-mode="pro" style="position:relative;">
+      <div class="card" style="position:relative;">
         <div class="section-title">日運表(30日)</div>
         <div class="copy-seal" onclick="copyAllUnki()" title="">㐂</div>
         <table class="unki-table">
@@ -2321,9 +2165,9 @@
             "月日":"日柱＋月柱","年日":"日柱＋年柱","年月":"月柱＋年柱","年月日":"年月日"
           };
           var labelMeaning = {
-            "月日":"社会・仕事の場での結果や自分自身の動きに出る",
-            "年日":"家系から受け継いだものが自分自身の中に現れる",
-            "年月":"家系・親世代から受け継いだものが社会・仕事の場で発揮される",
+            "月日":"仕事・社会の動きに出る",
+            "年日":"外向き・社会的な場面に出る",
+            "年月":"家系・親世代から受け継ぐ",
             "年月日":"宿命全体のテーマ"
           };
           // 干合の化合先を該当ペアから計算
@@ -2417,7 +2261,6 @@
         // 年運表の描画（前4年+今年+後5年=計10年）
         var nTbody = document.getElementById('nenun-tbody');
         nTbody.innerHTML = "";
-        var nowNenunCapture = null; // 260726: 今年の年運を台本で使うため
         for (var yOff = -4; yOff <= 5; yOff++) {
           var targetY = todayY + yOff;
           var ageThisY = targetY - year;
@@ -2429,10 +2272,7 @@
           var isou = detectKoutenIsou(yk, ys, "年運", ykan, yshi, mkan, mshi, dkan, dshi);
           var tenchuFlag = isInTenchu(ys);
           var tr = document.createElement('tr');
-          if (yOff === 0) {
-            tr.classList.add('current');
-            nowNenunCapture = { year:targetY, joushou:yJoushou, jushou:yJushou, isou:formatIsou(isou), tenchu:tenchuFlag };
-          }
+          if (yOff === 0) tr.classList.add('current');
           if (tenchuFlag) tr.classList.add('tenchu');
           var tenchuTag = tenchuFlag ? "<span class='tenchu-tag'>年天中殺</span><br>" : "";
           tr.innerHTML =
@@ -2503,58 +2343,6 @@
             hTbody.appendChild(dTr);
           }
         }
-
-        // ===== 260726 追加：お客さん用・大運矢印カード =====
-        try {
-          var nextDaiun = null;
-          if (currentDaiun) {
-            for (var ddi=0; ddi<daiunList.length; ddi++) {
-              if (daiunList[ddi] === currentDaiun && daiunList[ddi+1]) {
-                nextDaiun = daiunList[ddi+1];
-                break;
-              }
-            }
-          }
-          renderDaiunArrow(daiunList, currentAge);
-        } catch(e2) { console.warn('daiun arrow render fail', e2); }
-
-        // ===== 260726 追加：占い師用・読み上げ台本 =====
-        try {
-          var _ijouForDaihon = IJOU_KANSHI[dkan + dshi] || null;
-          var _nextDaiunForDaihon = null;
-          if (currentDaiun) {
-            for (var ddi2=0; ddi2<daiunList.length; ddi2++) {
-              if (daiunList[ddi2] === currentDaiun && daiunList[ddi2+1]) {
-                _nextDaiunForDaihon = daiunList[ddi2+1];
-                break;
-              }
-            }
-          }
-          buildDaihon({
-            name: name,
-            centerStar: centerStar,
-            northStar: northStar,
-            southStar: southStar,
-            westStar: westStar,
-            eastStar: eastStar,
-            headJ: headJ,
-            chestJ: chestJ,
-            bellyJ: bellyJ,
-            totalE: totalE,
-            utsuwa: utsuwa,
-            tenchuData: tenchuData,
-            shukumeiList: shukumeiList,
-            currentAge: currentAge,
-            currentDaiun: currentDaiun,
-            nextDaiun: _nextDaiunForDaihon,
-            nowNenun: nowNenunCapture,
-            ijou: _ijouForDaihon,
-            isouResults: isouResults,
-            gogyouComment: gogyouComment,
-            nikkanshi: dkan + dshi
-          });
-          document.getElementById('daihon-area').style.display = '';
-        } catch(e3) { console.warn('daihon build fail', e3); }
 
         resultEl.style.display = 'block';
         resultEl.scrollIntoView({behavior:'smooth', block:'start'});
@@ -4288,245 +4076,6 @@
     document.addEventListener('keypress', function(e){
       if (e.key === 'Enter') { (mtMode === 'aishou') ? calcAishou() : calculate(); }
     });
-
-    // =====================================================================
-    // 260726 追加：モード切替（お客さん用 / 占い師用 / 全部）
-    // =====================================================================
-    function switchViewMode(mode) {
-      document.body.setAttribute('data-view-mode', mode);
-      var btns = document.querySelectorAll('.mode-toggle button');
-      btns.forEach(function(b){
-        if (b.getAttribute('data-mode-btn') === mode) b.classList.add('active');
-        else b.classList.remove('active');
-      });
-      var hint = document.getElementById('mode-hint');
-      if (hint) {
-        hint.textContent = (mode === 'customer')
-          ? 'お客さん画面：図と要点だけ（Zoomの画面共有・マルシェの対面向け）'
-          : (mode === 'pro')
-          ? '占い師の台本：この文を上から読むだけで鑑定が組み立つ'
-          : '全部：内部で使う全情報を表示（既定）';
-      }
-    }
-    // 初期モード
-    document.body.setAttribute('data-view-mode', 'both');
-
-    // =====================================================================
-    // 260726 追加：大運の要点カード（お客さん用）を描画
-    // 呼び出しはcalculate()の末尾（結果表示後）に差し込む
-    // =====================================================================
-    function renderDaiunArrow(daiunList, currentAge) {
-      var card = document.getElementById('daiun-arrow-card');
-      var body = document.getElementById('daiun-arrow-body');
-      if (!card || !body || !daiunList || !daiunList.length) {
-        if (card) card.style.display = 'none';
-        return;
-      }
-      var now = null, next = null;
-      for (var i = 0; i < daiunList.length; i++) {
-        var d = daiunList[i];
-        if (d.age <= currentAge && (i+1 >= daiunList.length || daiunList[i+1].age > currentAge)) {
-          now = d;
-          next = daiunList[i+1] || null;
-          break;
-        }
-      }
-      if (!now) { card.style.display = 'none'; return; }
-      var html = '';
-      html += '<div style="display:flex;justify-content:center;gap:24px;align-items:stretch;flex-wrap:wrap;">';
-      html += '<div style="flex:1;min-width:140px;max-width:220px;padding:14px 12px;background:rgba(240,210,154,0.08);border:1px solid #6b5a3a;border-radius:6px;">';
-      html += '<div style="font-size:11px;color:#9a94a8;letter-spacing:1.5px;margin-bottom:6px;">いま</div>';
-      html += '<div style="font-size:22px;color:#f0d29a;font-weight:500;margin-bottom:4px;">'+(now.joushou||'')+'</div>';
-      html += '<div style="font-size:13px;color:#c8bfa0;">'+(now.jushou||'')+'</div>';
-      html += '<div style="font-size:11px;color:#7a7080;margin-top:8px;">'+now.age+'歳〜</div>';
-      html += '</div>';
-      if (next) {
-        html += '<div style="display:flex;align-items:center;color:#a83a2c;font-size:24px;padding:0 4px;">→</div>';
-        html += '<div style="flex:1;min-width:140px;max-width:220px;padding:14px 12px;background:rgba(11,10,16,0.4);border:1px dashed #4a3f2a;border-radius:6px;">';
-        html += '<div style="font-size:11px;color:#9a94a8;letter-spacing:1.5px;margin-bottom:6px;">つぎ</div>';
-        html += '<div style="font-size:20px;color:#d0c8a8;font-weight:500;margin-bottom:4px;">'+(next.joushou||'')+'</div>';
-        html += '<div style="font-size:12px;color:#a89f80;">'+(next.jushou||'')+'</div>';
-        html += '<div style="font-size:11px;color:#7a7080;margin-top:8px;">'+next.age+'歳〜</div>';
-        html += '</div>';
-      }
-      html += '</div>';
-      body.innerHTML = html;
-      card.style.display = '';
-    }
-
-    // =====================================================================
-    // 260726 追加：占い師用「読み上げ台本」を生成
-    // 使うデータは既存の JOUSHOU_DETAIL / JUSHOU_DETAIL / TENCHU_DATA / IJOU_DATA
-    // 呼び出しはcalculate()の末尾に差し込む
-    // =====================================================================
-    function ageBucket(currentAge) {
-      // JUSHOU_DETAIL.talk のキーに合わせる：shonen(〜25) / chunen(26〜55) / bannen(56〜)
-      if (currentAge <= 25) return 'shonen';
-      if (currentAge <= 55) return 'chunen';
-      return 'bannen';
-    }
-    function getStarTalk(starName, position) {
-      // starName = "貫索星" / position = "中心"|"社会"|"配偶者"|"目下"|"目上"|"伴星"
-      var d = JOUSHOU_DETAIL[starName];
-      if (!d || !d.talk || !d.talk[position]) return '';
-      return d.talk[position];
-    }
-    function getStarGoodBad(starName) {
-      var d = JOUSHOU_DETAIL[starName];
-      if (!d) return {good:'', bad:''};
-      return {good: d.good||'', bad: d.bad||''};
-    }
-    function getJushouTalk(jushouName, bucket) {
-      var key = jushouName.replace('星','');
-      var d = JUSHOU_DETAIL[jushouName] || JUSHOU_DETAIL[key];
-      if (!d || !d.talk || !d.talk[bucket]) return '';
-      return d.talk[bucket];
-    }
-    function getJushouZentai(jushouName) {
-      var key = jushouName.replace('星','');
-      var d = JUSHOU_DETAIL[jushouName] || JUSHOU_DETAIL[key];
-      return d && d.zentai ? d.zentai : '';
-    }
-
-    function buildDaihon(params) {
-      // params: {name, centerStar, northStar, southStar, westStar, eastStar,
-      //          headJ, chestJ, bellyJ, totalE, utsuwa,
-      //          tenchuData, shukumeiList, currentAge, currentDaiun, nextDaiun,
-      //          nowNenun, ijou, isouResults, gogyouComment, nikkanshi}
-      var p = params;
-      var lead = document.getElementById('daihon-lead');
-      var body = document.getElementById('daihon-body');
-      var ura  = document.getElementById('daihon-uraside');
-      var uraBody = document.getElementById('daihon-uraside-body');
-      if (!body) return;
-
-      var name = p.name || 'この方';
-      var bucket = ageBucket(p.currentAge);
-
-      // リード
-      lead.textContent = '読み上げるだけで鑑定が組み立つように書いた台本です。上から順にどうぞ。' +
-        '陽転（プラスに出た時）と陰転（マイナスに出た時）を両方伝えて、本人に選んでもらう形で語ります。';
-
-      var html = '';
-
-      // 1. 中心星
-      html += '<h3>1. 中心星（この方の芯）</h3>';
-      html += renderStarBlock(name+'さんの中心星は', p.centerStar, '中心', 'この人の芯・核・軸になる部分です');
-
-      // 2. 西方（配偶者・パートナー）
-      html += '<h3>2. 配偶者星（パートナーとの関係）</h3>';
-      html += renderStarBlock('パートナーとの関係で出るのが', p.westStar, '配偶者', '恋愛・結婚・共同生活で出やすい面');
-
-      // 3. 北方（目上）
-      html += '<h3>3. 目上の星（上司・親・年上に対して）</h3>';
-      html += renderStarBlock('目上の人には', p.northStar, '目上', '会社の上司や親、年上との関係');
-
-      // 4. 南方（目下）
-      html += '<h3>4. 目下の星（部下・子供・後輩に対して）</h3>';
-      html += renderStarBlock('目下の人には', p.southStar, '目下', '部下・子供・後輩・弟妹に対する出方');
-
-      // 5. 東方（社会・仕事・お金）
-      html += '<h3>5. 社会星（仕事・お金・世間に対して）</h3>';
-      html += renderStarBlock('社会に出た時は', p.eastStar, '社会', '仕事・お金・世間との関わり');
-
-      // 6. 十二大従星（総エネルギー）
-      html += '<h3>6. エネルギー量と役割（十二大従星）</h3>';
-      html += '<div class="daihon-block">';
-      html += 'エネルギーの総量は<span class="star-name">'+ p.totalE +'／36</span>。';
-      html += (p.utsuwa || '') + 'のタイプです。';
-      html += '</div>';
-      var jushouCurrent = (bucket==='shonen') ? p.headJ : (bucket==='chunen') ? p.chestJ : p.bellyJ;
-      var bucketLabel = (bucket==='shonen') ? '若い頃（〜25歳）' : (bucket==='chunen') ? '中年期（26〜55歳）' : '晩年期（56歳〜）';
-      var jTalk = getJushouTalk(jushouCurrent, bucket);
-      if (jTalk) {
-        html += '<div class="daihon-block">';
-        html += '今は「'+ bucketLabel +'」の'+ jushouCurrent +'の時代です。' + jTalk;
-        html += '</div>';
-      }
-
-      // 7. 天中殺
-      html += '<h3>7. 天中殺（この方が持ってる天中殺）</h3>';
-      if (p.tenchuData) {
-        html += '<div class="daihon-block">';
-        html += 'この方は<span class="star-name">'+ p.tenchuData.name +'</span>です。' + (p.tenchuData.desc || '');
-        html += '天中殺の時期は「新しく何かを始める」より「今あるものを深める・繋げる・拡げる」方向で動くと運勢が安定します。';
-        html += '</div>';
-      }
-
-      // 8. 宿命天中殺（該当時のみ）
-      if (p.shukumeiList && p.shukumeiList.length) {
-        html += '<h3>8. 宿命天中殺（生まれ持った天中殺）</h3>';
-        p.shukumeiList.forEach(function(s){
-          html += '<div class="daihon-block">';
-          html += '<span class="star-name">'+ s.type +'</span>を持っています。' + s.desc + '。';
-          html += '</div>';
-        });
-      }
-
-      // 9. 大運の今
-      if (p.currentDaiun) {
-        html += '<h3>9. 大運（10年ごとの大きな流れ）</h3>';
-        html += '<div class="daihon-block">';
-        html += '今は<span class="star-name">'+ (p.currentDaiun.joushou||'') +'／'+ (p.currentDaiun.jushou||'') +'</span>の大運の中にいます（'+ p.currentDaiun.age +'歳〜）。';
-        var czone = getStarTalk(p.currentDaiun.joushou, '中心');
-        if (czone) html += 'この時期は「'+ czone.split('。')[0] +'」が出やすい流れです。';
-        html += '</div>';
-        if (p.nextDaiun) {
-          html += '<div class="daihon-block">';
-          html += '次は<span class="star-name">'+ (p.nextDaiun.joushou||'') +'／'+ (p.nextDaiun.jushou||'') +'</span>（'+ p.nextDaiun.age +'歳〜）。';
-          html += 'ここで流れが変わります。';
-          html += '</div>';
-        }
-      }
-
-      // 10. 今年の運気
-      if (p.nowNenun) {
-        html += '<h3>10. 今年の運気</h3>';
-        html += '<div class="daihon-block">';
-        html += '今年は<span class="star-name">'+ (p.nowNenun.joushou||'') +'／'+ (p.nowNenun.jushou||'') +'</span>の年です。';
-        if (p.nowNenun.isou) html += '（'+ p.nowNenun.isou +'）';
-        var nzone = getStarTalk(p.nowNenun.joushou, '中心');
-        if (nzone) html += nzone.split('。')[0] + '——という質が今年強く出やすいです。';
-        html += '</div>';
-      }
-
-      body.innerHTML = html;
-
-      // 裏側情報（本人告知非推奨）
-      var uraHtml = '';
-      if (p.ijou) {
-        uraHtml += '<div style="margin-bottom:8px;"><b style="color:#f0d29a;">異常干支：'+ p.ijou.rank +'</b>'+ (p.ijou.strength ? '（'+p.ijou.strength+'）' : '') +'<br>' + p.ijou.note + '</div>';
-      }
-      if (p.isouResults && p.isouResults.length) {
-        uraHtml += '<div style="margin-bottom:4px;"><b style="color:#f0d29a;">命式内の位相法：</b></div>';
-        p.isouResults.forEach(function(x){
-          var line = (typeof x === 'string') ? x : ((x.label||'')+'：'+(x.type||''));
-          uraHtml += '<div>・'+ line +'</div>';
-        });
-      }
-      if (p.nikkanshi) {
-        uraHtml += '<div style="margin-top:8px;color:#a89f80;">日干支：'+ p.nikkanshi +'</div>';
-      }
-      if (uraHtml) {
-        uraBody.innerHTML = uraHtml;
-        ura.style.display = '';
-      } else {
-        ura.style.display = 'none';
-      }
-    }
-
-    function renderStarBlock(prefix, starName, position, subhint) {
-      if (!starName) return '';
-      var talk = getStarTalk(starName, position);
-      var gb = getStarGoodBad(starName);
-      var html = '<div class="daihon-block">';
-      html += prefix + '<span class="star-name">'+ starName +'</span>。';
-      html += (talk || '');
-      html += '<span class="plus-line"><b>プラスに出ると：</b>'+ (gb.good || '') +'</span>';
-      html += '<span class="minus-line"><b>マイナスに出ると：</b>'+ (gb.bad || '') +'</span>';
-      html += '</div>';
-      return html;
-    }
   </script>
 </body>
 </html>
