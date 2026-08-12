@@ -1531,13 +1531,15 @@
         {d:195,b:10},{d:225,b:11},{d:255,b:0},{d:285,b:1}
       ];
       var mBranchIdx = -1;
+      var setsuiriDeg = -1;
       for (var i=0; i<12; i++) {
         var cur = solarTerms[i], nxt = solarTerms[(i+1)%12];
         var match = (cur.d < nxt.d)
           ? (sunLon >= cur.d && sunLon < nxt.d)
           : (sunLon >= cur.d || sunLon < nxt.d);
-        if (match) { mBranchIdx = cur.b; break; }
+        if (match) { mBranchIdx = cur.b; setsuiriDeg = cur.d; break; }
       }
+      var daysFromSetsuiri = Math.floor((sunLon - setsuiriDeg + 360) % 360);
 
       // 年柱（立春切り替え）
       var sYear = year;
@@ -1560,10 +1562,29 @@
 
       var dkan = STEMS[dayIdx % 10], dshi = BRANCHES[dayIdx % 12];
 
+      // 陽占の星（単体側 calculate() と同じ算出式・相性でも使う）
+      // 中心=月支蔵干本気 / 北=年干 / 南=月干 / 西=日支蔵干本気 / 東=年支蔵干本気
+      var yshiHonki = getZoukanHonki(yshi, daysFromSetsuiri);
+      var mshiHonki = getZoukanHonki(mshi, daysFromSetsuiri);
+      var dshiHonki = getZoukanHonki(dshi, daysFromSetsuiri);
+      var centerStar = getJoushou(dkan, mshiHonki);
+      var northStar  = getJoushou(dkan, ykan);   // 目上・親に向ける星
+      var southStar  = getJoushou(dkan, mkan);   // 目下・子に向ける星
+      var westStar   = getJoushou(dkan, dshiHonki); // 配偶者
+      var eastStar   = getJoushou(dkan, yshiHonki); // 社会・恋愛
+      // 十二大従星：頭=年支(初年運) / 胸=月支(中年運) / 腹=日支(晩年運)
+      var headJushou  = getJushou(dkan, yshi);
+      var chestJushou = getJushou(dkan, mshi);
+      var bellyJushou = getJushou(dkan, dshi);
+
       return {
         jd: jd, yIdx: yIdx, ykan: ykan, yshi: yshi,
         mEtoIdx: mEtoIdx, mkan: mkan, mshi: mshi,
-        dayIdx: dayIdx, dkan: dkan, dshi: dshi
+        dayIdx: dayIdx, dkan: dkan, dshi: dshi,
+        daysFromSetsuiri: daysFromSetsuiri,
+        centerStar: centerStar, northStar: northStar, southStar: southStar,
+        westStar: westStar, eastStar: eastStar,
+        headJushou: headJushou, chestJushou: chestJushou, bellyJushou: bellyJushou
       };
     }
 
@@ -3881,6 +3902,31 @@
       0:{ name:"特殊型", body:"別居結婚・国際結婚・年の差婚など、普通とは違う形の関係に向く。" }
     };
 
+    // 十大主星→五行（中心星同士の相生相剋判定用）
+    var STAR_TO_GOGYOU = {
+      "貫索星":"木","石門星":"木","鳳閣星":"火","調舒星":"火",
+      "禄存星":"土","司禄星":"土","車騎星":"金","牽牛星":"金",
+      "龍高星":"水","玉堂星":"水"
+    };
+    function STEM_GOGYOU_OF_STAR(star){ return STAR_TO_GOGYOU[star] || "土"; }
+
+    // ---------- 親子の相性・4軸 ----------
+    // 出典: _占い・スピ/算命学/知識/親子鑑定の方法.md（260713・㐂さん一次資料）
+    // 軸1 日干／軸2 中心星／軸3 子の宿命天中殺／軸4 十二大従星の自立サイン
+    // 干合の化す五行→加わる性質（親子鑑定の方法.md 軸1-3）
+    var KANGOU_KESHITSU = {
+      "水":"知性と情緒の融合。共に学ぶ意欲・知的好奇心を高め合える",
+      "土":"安定と受容。地に足のついた安心できる土台を育て合える",
+      "金":"けじめと実り。筋の通った価値観・美意識を磨き合える",
+      "木":"成長と伸びやかさ。夢や向上心を伸ばし合える",
+      "火":"情熱と表現。感情や個性を輝かせ合える"
+    };
+    // 軸4 十二大従星の自立サイン（頭＝初年運の星で判定）
+    var OYAKO_JIRITSU = {
+      "天恍星":"子の初年運が天恍星＝生地・生家を離れる星。思春期以降、実家を離れたい欲求が強く出やすい。離すことが開運",
+      "天将星":"子の初年運が天将星＝並外れて強いエネルギー（王様の星）。早めに責任ある役割を与え完全燃焼させると伸びる。過保護はわがまま・怠けに転じやすい"
+    };
+
     // ---------- 天中殺グループ相性（6×6・行=本人/列=相手） ----------
     // 出典: sanmei-stock 運命天中殺の相性 各ページ（260811取得・原文ベース）。行=本人が相手側と組んだ時に何を得るか
     var TENCHU_AISHOU = {
@@ -3921,6 +3967,21 @@
               "申酉":"◎ 社会との結びつきが強固に。人脈づくりのノウハウを教わり、世に出る時に不可欠",
               "戌亥":"⚠ 同一天中殺。理想を語り合い盛り上がるが前進力は生まれない。友達には良いが仕事相手には工夫が要る"}
     };
+
+    // 関係テーマのラベル（親子は親役つき）
+    function mtRelLabel(rel, A, B){
+      var parentName = (mtParent === 'A') ? A.name : B.name;
+      var childName  = (mtParent === 'A') ? B.name : A.name;
+      switch(rel){
+        case 'renai':    return '恋愛';
+        case 'fufu':     return '夫婦';
+        case 'oyako':    return '親子（' + parentName + 'が親・' + childName + 'が子）';
+        case 'kyodai':   return 'きょうだい';
+        case 'business': return '仕事';
+        case 'friend':   return '友人';
+        default:         return '相性';
+      }
+    }
 
     // ---------- 相性計算 ----------
     function mtReadPerson(p){
@@ -4039,26 +4100,56 @@
       if (isTenkokuChichuu(A.dkan,A.dshi,B.dkan,B.dshi)) isouList.unshift("★ 日柱同士が天剋地冲＝最強の衝突と学び。人生を変え合う縁");
       out.sections.push({ h:"位相法（支の関係）", b: isouList.length ? isouList.join("\n") : "強い位相はなし（中立＝穏やかな関係）" });
 
-      // 5. 親子モードの追加軸
-      if (rel !== 'love') {
-        var parent = (rel === 'oyako_a_parent') ? A : B;
-        var child  = (rel === 'oyako_a_parent') ? B : A;
+      // 5. 親子モードの追加軸（親子鑑定の方法.md の4軸）
+      if (rel === 'oyako') {
+        // mtParent: 'A'=自分(A)が親 / 'B'=相手(B)が親
+        var parent = (mtParent === 'A') ? A : B;
+        var child  = (mtParent === 'A') ? B : A;
         var lines = [];
+
+        // 軸1：日干同士（干合・比和・相生・相剋）
         if (isKangou) {
-          lines.push("親子の日干が干合＝魂の共鳴・一心同体型の親子。象徴同士が輝かせ合う理想的な関係（結びつきが強い分、境界線は意識する）");
+          var kesshou = (typeof getKangouHenka==='function') ? getKangouHenka(parent.dkan, child.dkan) : null;
+          var kline = "【軸1・日干】干合＝魂の共鳴・一心同体型の親子。象徴同士が輝かせ合う理想的なご縁（一人ずつ→結びつけて語る）。結びつきが強い分、境界線は意識する。";
+          if (kesshou && KANGOU_KESHITSU[kesshou]) kline += "\n化す五行＝" + kesshou + "：" + KANGOU_KESHITSU[kesshou] + "（この方向の共通の趣味・関わりが温度を上げる）";
+          lines.push(kline);
         } else {
           var pr = GOGYOU_REL[STEM_GOGYOU[parent.dkan].g][STEM_GOGYOU[child.dkan].g];
-          if (pr === "比和") lines.push("親子の日干が比和＝似た者同士。理解しやすいが欠点も似て衝突しやすい");
-          else if (pr === "洩") lines.push("親（" + parent.dkan + "）が子（" + child.dkan + "）を生じる＝自然に育てやすい。親が一方的に頑張りすぎないこと");
-          else if (pr === "生") lines.push("子（" + child.dkan + "）が親（" + parent.dkan + "）を生じる＝子が親を支える構図。子の負担に注意");
-          else lines.push("親子の日干が相剋＝緊張感のある関係。ただし反発が子の自我を育て、親を超える力になる");
+          if (pr === "比和") lines.push("【軸1・日干】比和＝似た者同士。理解しやすいが欠点も似て、似すぎて衝突しやすい面も");
+          else if (pr === "洩") lines.push("【軸1・日干】親（" + parent.dkan + "）が子（" + child.dkan + "）を生じる＝自然に育てやすい。親が一方的に頑張りすぎないこと");
+          else if (pr === "生") lines.push("【軸1・日干】子（" + child.dkan + "）が親（" + parent.dkan + "）を生じる＝子が親を支える構図。子の負担に注意");
+          else lines.push("【軸1・日干】相剋＝緊張感のある関係。ただし反発が子の自我を育て、親を超えていく力になることもある");
         }
+
+        // 軸2：中心星同士（教育スタイルの噛み合わせ）＋親子の方位の星
+        if (parent.centerStar && child.centerStar) {
+          var cr = GOGYOU_REL[STEM_GOGYOU_OF_STAR(parent.centerStar)][STEM_GOGYOU_OF_STAR(child.centerStar)];
+          var c2 = "【軸2・中心星】親＝" + parent.centerStar + "／子＝" + child.centerStar + "。";
+          if (parent.centerStar === child.centerStar) c2 += "同じ中心星＝同じ本能型。理解しやすいが欠点も似る";
+          else if (cr === "比和") c2 += "同じ五行の本能＝噛み合わせは近いが刺激は少なめ";
+          else if (cr === "洩" || cr === "生") c2 += "相生の関係＝教育・接し方がスムーズに回りやすい";
+          else c2 += "相剋の関係＝緊張感はあるが、子を鍛える方向にも働く";
+          lines.push(c2);
+        }
+        // 親子の方位の星（親が子に向ける南方星 × 子が親に向ける北方星）
+        if (parent.southStar && child.northStar) {
+          lines.push("【軸2補・方位】親が子に向ける星（親の南方＝目下）＝" + parent.southStar + "／子が親に向ける星（子の北方＝目上）＝" + child.northStar + "。この2つの噛み合いが日々の接し方に出る");
+        }
+
+        // 軸3：子側の宿命天中殺
         var shuku = mtShukumeiTenchu(child);
-        if (shuku.length) lines.push("子の宿命天中殺：" + shuku.join("／"));
-        var pMap = {"子丑":"安定系","寅卯":"安定系","申酉":"安定系","午未":"流動系","辰巳":"流動系","戌亥":"流動系"};
-        if (pMap[parent.tenchu] === "流動系") lines.push("親が" + parent.tenchu + "天中殺（流動系）＝子との縁は独特。継がせるより独立させる方が伸びる");
-        else lines.push("親が" + parent.tenchu + "天中殺（安定系）＝後継ぎ・継承の心配は少ない型");
-        out.sections.push({ h:"親子の軸", b: lines.join("\n") });
+        if (shuku.length) lines.push("【軸3・子の宿命天中殺】" + shuku.join("／") + "\n→ 親の常識が響きにくい・自立志向が強い型。早期自立が陽転条件だが、子の年齢に応じて温度調整（今は今の形でよい／自立したいと言った時に後押し）");
+        else lines.push("【軸3・子の宿命天中殺】なし＝家系の流れに素直に乗りやすい型");
+
+        // 軸4：十二大従星の自立サイン（子の初年運＝頭）
+        if (child.headJushou && OYAKO_JIRITSU[child.headJushou]) {
+          lines.push("【軸4・自立サイン】" + OYAKO_JIRITSU[child.headJushou]);
+        }
+        // 律音（親子で同じ干支）＝自立を妨げる
+        var oyakoRitchin = (parent.dkan===child.dkan && parent.dshi===child.dshi);
+        if (oyakoRitchin) lines.push("【軸4補・律音】親子の日柱が同じ干支＝一心同体になりすぎて自立が妨げられることがある。適切な時期に意識的な心理的分離を");
+
+        out.sections.push({ h:"親子の軸（4軸）", b: lines.join("\n\n") });
       }
 
       mtRenderAishou(out);
@@ -4067,7 +4158,7 @@
     var mtLastAishou = null;
 
     function mtRenderAishou(o){
-      var relLabel = o.rel==='love' ? '恋愛・夫婦' : (o.rel==='oyako_a_parent' ? '親子（'+o.A.name+'が親）' : '親子（'+o.B.name+'が親）');
+      var relLabel = mtRelLabel(o.rel, o.A, o.B);
       var h = '<div class="header"><h2 class="meishi-title">' + o.A.name + ' × ' + o.B.name + '</h2>' +
               '<p class="meishi-info">' + relLabel + ' の縁</p></div>';
       function pBox(k){
@@ -4088,7 +4179,7 @@
 
     function buildAishouMD(){
       var o = mtLastAishou; if (!o) return "";
-      var relLabel = o.rel==='love' ? '恋愛・夫婦の相性' : (o.rel==='oyako_a_parent' ? '親子の相性（'+o.A.name+'が親・'+o.B.name+'が子）' : '親子の相性（'+o.B.name+'が親・'+o.A.name+'が子）');
+      var relLabel = mtRelLabel(o.rel, o.A, o.B) + 'の相性';
       var md = "# 相性鑑定 素材データ：" + o.A.name + " × " + o.B.name + "\n\n";
       md += "関係：" + relLabel + "\n\n";
       function person(k){
