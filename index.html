@@ -1268,24 +1268,25 @@
       chkHa("年日", yshi, dshi);
       chkRitchin("年日", ykan, yshi, dkan, dshi);
 
+      // 3支揃いの判定は「異なる3種類が揃っているか」で見る。
+      // 同じ支が重複しているだけ（例：子・子・丑）では成立しない。
+      // ※260814修正：以前は該当グループに属する柱の"個数"を数えていたため、
+      //   子・子・丑を北方方三位（亥が無いのに）と誤判定していた。
+      function hasAllThree(group, a, b, c) {
+        for (var i=0; i<group.length; i++) {
+          if (group[i]!==a && group[i]!==b && group[i]!==c) return false;
+        }
+        return true;
+      }
+
       // 三合（3支揃い）
       for (var s=0; s<SANGOU.length; s++) {
-        var group = SANGOU[s];
-        var count = 0;
-        if (group.indexOf(yshi)>=0) count++;
-        if (group.indexOf(mshi)>=0) count++;
-        if (group.indexOf(dshi)>=0) count++;
-        if (count===3) results.push({type:"大半会(三合)", label:"年月日", strong:true});
+        if (hasAllThree(SANGOU[s], yshi, mshi, dshi)) results.push({type:"大半会(三合)", label:"年月日", strong:true});
       }
 
       // 方三位（同季節3支揃い）
       for (var h=0; h<HOUSANI.length; h++) {
-        var group = HOUSANI[h].branches;
-        var count = 0;
-        if (group.indexOf(yshi)>=0) count++;
-        if (group.indexOf(mshi)>=0) count++;
-        if (group.indexOf(dshi)>=0) count++;
-        if (count===3) results.push({type:"方三位("+HOUSANI[h].name+")", label:"年月日", strong:true});
+        if (hasAllThree(HOUSANI[h].branches, yshi, mshi, dshi)) results.push({type:"方三位("+HOUSANI[h].name+")", label:"年月日", strong:true});
       }
 
       // 天剋地冲（命式内）
@@ -1359,30 +1360,39 @@
         return true;
       });
 
-      // 大半会（三合）：後天運の支1個 + 命式の支2個 で三合が揃う
+      // 後天運での3支揃いも「異なる3種類が揃うか」で判定する。
+      // ※260814修正：以前はマッチした柱の"個数"が2以上で成立としていたため、
+      //   命式に同じ支が重複しているだけ（例：子・子・丑に子が回る）でも
+      //   成立と誤判定していた。揃った支の種類で判定する。
+      function unHasAllThree(group, a, b, c, u) {
+        for (var i=0; i<group.length; i++) {
+          if (group[i]!==a && group[i]!==b && group[i]!==c && group[i]!==u) return false;
+        }
+        return true;
+      }
+
+      // 大半会（三合）：後天運の支 + 命式の支 で三合が揃う
       for (var s=0; s<SANGOU.length; s++) {
         var group = SANGOU[s];
         if (group.indexOf(unShi) < 0) continue;
+        if (!unHasAllThree(group, yshi, mshi, dshi, unShi)) continue;
         var matched = [];
         if (group.indexOf(yshi) >= 0) matched.push("年");
         if (group.indexOf(mshi) >= 0) matched.push("月");
         if (group.indexOf(dshi) >= 0) matched.push("日");
-        if (matched.length >= 2) {
-          results.push({type:"大半会(三合)", label: unLabel + "→" + matched.join("+") + "柱", strong:true});
-        }
+        results.push({type:"大半会(三合)", label: unLabel + "→" + matched.join("+") + "柱", strong:true});
       }
 
-      // 方三位：後天運の支1個 + 命式の支2個 で同季節3支揃い（後天方三位）
+      // 方三位：後天運の支 + 命式の支 で同季節3支揃い（後天方三位）
       for (var h=0; h<HOUSANI.length; h++) {
         var grp = HOUSANI[h].branches;
         if (grp.indexOf(unShi) < 0) continue;
+        if (!unHasAllThree(grp, yshi, mshi, dshi, unShi)) continue;
         var mt = [];
         if (grp.indexOf(yshi) >= 0) mt.push("年");
         if (grp.indexOf(mshi) >= 0) mt.push("月");
         if (grp.indexOf(dshi) >= 0) mt.push("日");
-        if (mt.length >= 2) {
-          results.push({type:"方三位("+HOUSANI[h].name+")", label: unLabel + "→" + mt.join("+") + "柱", strong:true});
-        }
+        results.push({type:"方三位("+HOUSANI[h].name+")", label: unLabel + "→" + mt.join("+") + "柱", strong:true});
       }
 
       // 破フィルター：同じターゲット柱に他位相がある時のみ残す
@@ -1451,65 +1461,46 @@
       };
     }
 
-    // 大運計算（高尾学館系・260602改訂）
+    // 大運計算（高尾学館系）
+    // 出典: 算命学Stock 命式の算出方法 https://sanmei-stock.com/output-propositions/calculation-method/
     // 順逆：男×陽干=順行 / 男×陰干=逆行 / 女×陽干=逆行 / 女×陰干=順行（年干の陰陽）
-    // 開始年齢（立運数）：
-    //   順行 = 誕生日〜次の節入り日までの日数 ÷ 3、四捨五入
-    //   逆行 = 誕生日〜前の節入り日までの日数 ÷ 3、四捨五入
-    //   節入り当日は含めない（高尾系）
-    //   結果が0なら1歳運、11なら10歳運に丸める
-    function calcDaiunStartAge(birthJD, forward) {
-      // 誕生日のJDから前後の節入りJDを探す
-      // 節入りは太陽黄経が15度の倍数（315, 345, 15, 45, ..., 285）になる瞬間
-      // 日単位でスキャン
-      var dayStep = forward ? 1 : -1;
-      var maxScan = 35; // 節入り間隔は最大約32日（大暑〜立秋等）
-      var foundDays = null;
-      var birthLon = getSunLongitude(birthJD);
-      // 節入り境界：黄経が下記のいずれかをまたぐ瞬間
-      // 315(立春), 345(啓蟄), 15(清明), 45(立夏), 75(芒種), 105(小暑),
-      // 135(立秋), 165(白露), 195(寒露), 225(立冬), 255(大雪), 285(小寒)
-      var terms = [315, 345, 15, 45, 75, 105, 135, 165, 195, 225, 255, 285];
-      function isSetsuiri(jd1, jd2) {
-        // jd1→jd2の間に節入り境界を跨いだか
-        var lon1 = getSunLongitude(jd1);
-        var lon2 = getSunLongitude(jd2);
-        for (var t=0; t<terms.length; t++) {
-          var target = terms[t];
-          // lon1→lon2で target をまたいだか（前進/後退方向）
-          if (forward) {
-            // 前進：lon1 < target <= lon2 （ただし360→0をまたぐケース考慮）
-            if (lon1 < lon2) {
-              if (lon1 < target && target <= lon2) return true;
-            } else {
-              // 360→0をまたいだ
-              if (target > lon1 || target <= lon2) return true;
+    // 立運数：順行=誕生日〜次の節入りまでの日数 / 逆行=誕生日〜前の節入りからの日数
+    //   その日数（実日数差を四捨五入）を÷3し、さらに四捨五入。0→1歳運・11→10歳運に丸める
+    // 【260815修正】旧実装は節入りを跨ぐ日を1日刻みでスキャンし整数を返したため、
+    //   実差を常に切り上げていた（NAO 10.15日→11→4歳の誤り）。節入りの正確なJDを
+    //   二分探索で求め、誕生日との実日数差を四捨五入して数える方式に修正。
+    //   検証: NAO=3・ゆり=7・㐂=5・由華=9（_命式検証ケース.md）
+    var DAIUN_TERMS = [315, 345, 15, 45, 75, 105, 135, 165, 195, 225, 255, 285];
+    function findSetsuiriJD(birthJD, forward) {
+      // 誕生日から進行方向へ0.25日刻みでスキャンし、最初に節入り境界を跨いだら二分探索で正確なJDを返す
+      var step = forward ? 0.25 : -0.25;
+      var cur = birthJD;
+      for (var k=0; k<400; k++) {
+        var l1 = getSunLongitude(cur), l2 = getSunLongitude(cur + step);
+        for (var t=0; t<DAIUN_TERMS.length; t++) {
+          var target = DAIUN_TERMS[t];
+          var hit = forward
+            ? ((l1 < l2) ? (l1 < target && target <= l2) : (target > l1 || target <= l2))
+            : ((l2 < l1) ? (l2 <= target && target < l1) : (target >= l2 || target < l1));
+          if (hit) {
+            var lo = cur, hi = cur + step;
+            for (var j=0; j<50; j++) {
+              var mid = (lo + hi) / 2;
+              var d = ((getSunLongitude(mid) - target + 540) % 360) - 180;
+              if ((d < 0) === (step > 0)) lo = mid; else hi = mid;
             }
-          } else {
-            // 後退：lon2 <= target < lon1
-            if (lon2 < lon1) {
-              if (lon2 <= target && target < lon1) return true;
-            } else {
-              if (target >= lon2 || target < lon1) return true;
-            }
+            return (lo + hi) / 2;
           }
         }
-        return false;
+        cur += step;
       }
-      for (var i=1; i<=maxScan; i++) {
-        var prevJD = birthJD + dayStep*(i-1);
-        var nowJD = birthJD + dayStep*i;
-        if (isSetsuiri(prevJD, nowJD)) {
-          foundDays = i;
-          break;
-        }
-      }
-      if (foundDays === null) return 7; // フォールバック（通常発生しない）
-      // 節入り当日は含めない（高尾系）→ 誕生日の翌日から数えるので、上で出した i がそのまま「日数」
-      // ただし「節入りまでの日数」は誕生日翌日から節入り当日までなので i = 節入りまでの日数
-      // 高尾系では「当日含めない」＝ i-1 で扱う流派もある。一般的には i のままが多い
-      // 今回は ÷3 四捨五入で7歳になるはず（ゆりさん 1973/2/14・順行・次節入り3/6→20日→7歳）
-      var startAge = Math.round(foundDays / 3);
+      return null;
+    }
+    function calcDaiunStartAge(birthJD, forward) {
+      var setsuiriJD = findSetsuiriJD(birthJD, forward);
+      if (setsuiriJD === null) return 7; // フォールバック（通常発生しない）
+      var days = Math.round(Math.abs(setsuiriJD - birthJD)); // 実日数差を四捨五入
+      var startAge = Math.round(days / 3);
       if (startAge === 0) startAge = 1;
       if (startAge >= 11) startAge = 10;
       return startAge;
