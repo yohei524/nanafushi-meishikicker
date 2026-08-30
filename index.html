@@ -667,7 +667,7 @@
         <div class="copy-seal" onclick="copyForClaude()" title="">㐂</div>
         <div class="kantei-row">
           <div class="kantei-btn free" onclick="copyKantei('free', this)">☾ 無料鑑定プロンプト<small>設計＋命式データを丸ごとコピー</small></div>
-          <div class="kantei-btn paid" onclick="copyKantei('paid', this)">本鑑定プロンプト ☗<small>㐂さん確認ステップ込み＋命式</small></div>
+          <div class="kantei-btn paid" onclick="copyKantei('paid', this)">本鑑定プロンプト ☗<small>紡の席・Meet台本の設計＋命式</small></div>
         </div>
         <div class="copy-msg" id="copy-msg"></div>
       </div>
@@ -2273,6 +2273,8 @@
         // 年運表の描画（前4年+今年+後5年=計10年）
         var nTbody = document.getElementById('nenun-tbody');
         nTbody.innerHTML = "";
+        // 【260826修正】行の干支は立春後基準なのにハイライトは暦年一致だったため、
+        // 1/1〜立春の間「まだ来ていない年」が現在行として光っていた。今の年干支(nowKanshi・立春切替済み)との一致で付ける
         for (var yOff = -4; yOff <= 5; yOff++) {
           var targetY = todayY + yOff;
           var ageThisY = targetY - year;
@@ -2284,7 +2286,7 @@
           var isou = detectKoutenIsou(yk, ys, "年運", ykan, yshi, mkan, mshi, dkan, dshi);
           var tenchuFlag = isInTenchu(ys);
           var tr = document.createElement('tr');
-          if (yOff === 0) tr.classList.add('current');
+          if (nk.yIdx === nowKanshi.yIdx) tr.classList.add('current');
           if (tenchuFlag) tr.classList.add('tenchu');
           var tenchuTag = tenchuFlag ? "<span class='tenchu-tag'>年天中殺</span><br>" : "";
           tr.innerHTML =
@@ -2299,10 +2301,15 @@
         // 月運表の描画（今月から12ヶ月）
         var gTbody = document.getElementById('getsuun-tbody');
         gTbody.innerHTML = "";
-        for (var mOff = 0; mOff < 12; mOff++) {
+        // 【260826修正】毎月1日〜節入りの間、本当の当月（前月節気）が表に無いまま翌月節気の行が光っていた。
+        // 節入り前は前月行から表示を始め、ハイライトは今の月干支(nowKanshi)との一致で付ける
+        var midNow = calcKanshiForDate(todayY, todayM, 15);
+        var mStartOff = (midNow.mEtoIdx === nowKanshi.mEtoIdx) ? 0 : -1;
+        for (var mOff = mStartOff; mOff < mStartOff + 12; mOff++) {
           var targetY2 = todayY;
           var targetM2 = todayM + mOff;
           while (targetM2 > 12) { targetM2 -= 12; targetY2++; }
+          while (targetM2 < 1) { targetM2 += 12; targetY2--; }
           // 月の中盤(15日)を基準に節入り後の干支を取得
           var mk = calcKanshiForDate(targetY2, targetM2, 15);
           var mkk = mk.mkan, mks = mk.mshi;
@@ -2311,7 +2318,7 @@
           var isou = detectKoutenIsou(mkk, mks, "月運", ykan, yshi, mkan, mshi, dkan, dshi);
           var tenchuFlag = isInTenchu(mks);
           var tr = document.createElement('tr');
-          if (mOff === 0) tr.classList.add('current');
+          if (mk.mEtoIdx === nowKanshi.mEtoIdx) tr.classList.add('current');
           if (tenchuFlag) tr.classList.add('tenchu');
           var tenchuTag = tenchuFlag ? "<span class='tenchu-tag'>月天中殺</span><br>" : "";
           tr.innerHTML =
@@ -3800,17 +3807,30 @@
       "## 送信前チェック\n" +
       "禁止語（でしょ／タイプ／ありがとうございます／あなた／可能性があります／拝見しました）を機械的に検索して0件を確認し、文字数が400〜600字に収まっているか数えてから提出する。\n\n---\n\n";
 
-    var PROMPT_PAID = "# 本鑑定（有料・紡の席）の依頼\n\n" +
-      "以下は命式チェッカーが出力した命式データです。この人の有料本鑑定文を作ります。\n\n" +
-      "## 最初に確認（ここで一度止まる）\n" +
-      "書き始める前に㐂さんに確認する：①どの相談・どの申込みの本鑑定か ②構成や文字量の指定があるか。本鑑定の専用スキルは未整備のため、この確認を飛ばして書き始めることを禁止。スキル `muryou-kantei` が使える環境なら references（特に 02_痛みと陽転の設計）を土台として読む。\n\n" +
-      "## 有料の思想（無料との違い）\n" +
-      "無料は痛みを突いて答えを有料に残す場。有料は答えを出しきる場。材料は全部使い、抜け方・時期・具体的処方まで踏み込む。\n\n" +
-      "## 構成の基本形（㐂さんの指定があればそちらが優先）\n" +
-      "芯（この人は何者か）→ 痛みの構造（なぜそうなるか）→ 転換 → 陽転の情景 → 時期（大運・年運のタイムラインで「いつ・何をするか」）→ 具体的処方 → 締め\n" +
-      "- 断定しつつ逃げ道を残す。恐怖で終わらせない\n" +
-      "- 術語は日常語に翻訳する（術語のままの根拠は㐂さん確認用に本文とは別に添える）\n" +
-      "- 口調・禁止事項は無料鑑定と同じ（僕／名前で呼ぶ／おおきにです／「でしょ」語尾禁止／「〜なタイプ」分類禁止／保険語禁止／絵文字なし）\n\n---\n\n";
+    // 【260826更新】本鑑定スキル tsumugi-kantei 整備に伴い「専用スキル未整備」の文面を廃止。
+    // スキルがある環境ではスキルが正。無い環境用に圧縮版設計を同梱（スキル改訂時はここも同期）。
+    var PROMPT_PAID = "# 本鑑定（紡の席・Meet台本）の依頼\n\n" +
+      "以下は命式チェッカーが出力した命式データです。この人の紡の席（有料本鑑定）のMeet読み上げ台本を作ります。\n\n" +
+      "## 最初に確認\n" +
+      "- スキル `tsumugi-kantei` が使える環境なら必ず発動し、その工程表に従うこと（スキルが正・以下より優先）\n" +
+      "- 揃うまで書き始めない：①チェッカーのフルデータ ②相談内容の全文 ③無料鑑定済みならその本文（何を伝え何を伏せたか） ④Meetの日時・呼び名\n\n" +
+      "## 位置づけ\n" +
+      "無料鑑定は当てを出し切らない予告編。本鑑定は全部出し切る本編。無料で伏せた核心・具体的な処方・守護神の使い方・大運の設計図まで全部渡す。思想（痛みを避けず突く→転換→陽転・恐怖で煽らない）は無料鑑定と同じ土台。\n\n" +
+      "## 書く前の工程（飛ばすな）\n" +
+      "1. 大運の立運・順逆を必ず手検算する（チェッカーは過去に大運が壊れていた実績が複数回ある）。食い違ったら書かずに㐂さんに報告\n" +
+      "2. 無料鑑定済みなら、そこで伝えた内容と矛盾しないか照合。矛盾したら㐂さんに提示\n" +
+      "3. 骨組みを出して㐂さんのOKを待つ：芯（日干支＋中心星で人物像1つ）／痛み（構造的な弱点）／転換（天中殺・大運切り替わりのタイムライン）／陽（今日渡す処方の核心）／相談内容を一文に圧縮した「今日のゴール」\n\n" +
+      "## 台本の型\n" +
+      "- Meetでそのまま読み上げるセリフ形式（「」で読む部分・※でメモ）。冒頭に生年月日確認ブロック（人違い事故防止）、先頭に「今日のゴール」を骨子として明示\n" +
+      "- 技法はチェッカーの表示順で回る（陰占→日干支→人体星図→天中殺→五行→八門法→調候守護神→才能占技→大運→年運→月運→締め）\n" +
+      "- 各セクションは技法解説で終わらせず、毎回「これが相談のこの部分の答えです」と今日のゴールに戻す。相談への答えに直結しない術語は削るか一言に圧縮\n" +
+      "- 2つ以上の技法を掛け算して1つの答えを作る（並べて終わらせない）\n" +
+      "- 選択肢が割れる相談（辞める/続ける等）は、両方の道を絵にして見せた上で命式的な追い風がどちらに吹いているかを言う。断定で片方を潰さない\n" +
+      "- 末尾に「★言わないこと」「★必ず聞くこと」「★時間が押したら削る順」を必ず付ける\n\n" +
+      "## 口調と禁止事項\n" +
+      "無料鑑定と同じ（一人称は僕／名前で呼ぶ・「あなた」禁止／おおきにです・「ありがとうございます」禁止／「でしょ」語尾禁止／「〜なタイプ」分類禁止／保険語禁止／星や運気を主語にして作用させる表現禁止（「星が効く」「星が乗る」「運気が回ってくる」等）／絵文字なし）。占術家名（足利・ゆきうさぎ・いけジィ等）は絶対に出さない。\n\n" +
+      "## 保存先\n" +
+      "~/Desktop/0.output/鑑定文/YYYY-MM/○○さん_鑑定文/★そのまま読む_鑑定台本.txt（人物名必須）\n\n---\n\n";
 
     var PROMPT_AISHOU_FREE = "# 鑑定AIへの指示（相性・無料鑑定モード）\n\n" +
       "あなたは占い師のアシスタントです。以下の二人の命式と相性素材から、無料の相性鑑定文を作ります。\n" +
