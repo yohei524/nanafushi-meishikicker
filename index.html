@@ -849,6 +849,13 @@
         <div class="reading" id="sainou-detail"></div>
       </div>
 
+      <!-- 行動領域（宇宙盤）260826追加 -->
+      <div class="card">
+        <div class="section-title">行動領域（宇宙盤）</div>
+        <div id="uchuban-box"></div>
+        <div class="reading" id="koudou-detail" style="margin-top:8px;"></div>
+      </div>
+
       <!-- 人生テーマ -->
       <div class="card">
         <div class="section-title">人生テーマ</div>
@@ -1506,6 +1513,111 @@
       return startAge;
     }
 
+
+    // ================================================================
+    // 行動領域（宇宙盤）260826追加
+    // 定義：教科書 17_資料_応用占技 2-1「行動領域」＋算命学Stock「行動領域」準拠。
+    // 60干支を甲子=真北起点で時計回りに円配置し、年・月・日の3点を結んだ図形が
+    // 4領域（干支番号1〜15／16〜30／31〜45／46〜60）のいくつを通過するかを数える（1〜4領域）。
+    // 領域数＝影響を及ぼす人間関係の広さ。広い＝才能があるではなく、生まれ持った影響圏の広さ。
+    var KOUDOU_RYOUIKI_INFO = [
+      { name:"第一領域", corner:"丑寅", range:"甲子〜戊寅", desc:"知的だが情もある" },
+      { name:"第二領域", corner:"辰巳", range:"己卯〜癸巳", desc:"情的で常識的" },
+      { name:"第三領域", corner:"未申", range:"甲午〜戊申", desc:"現実的な情" },
+      { name:"第四領域", corner:"戌亥", range:"己酉〜癸亥", desc:"理性的・論理的" }
+    ];
+    function kdrPos(idx) { // 干支インデックス(0-59)→単位円座標（甲子=真北・時計回り・目盛り中央）。SVG座標系(y下向き)
+      var ang = (idx + 0.5) * 6 * Math.PI / 180;
+      return { x: Math.sin(ang), y: -Math.cos(ang) };
+    }
+    function kdrRegionOf(x, y) { // 座標→領域番号1-4（真北から時計回りに90度ずつ）
+      var ang = Math.atan2(x, -y) * 180 / Math.PI;
+      if (ang < 0) ang += 360;
+      return Math.floor(ang / 90) % 4 + 1;
+    }
+    function calcKoudouRyouiki(yIdx, mIdx, dIdx) {
+      var pts = [kdrPos(yIdx), kdrPos(mIdx), kdrPos(dIdx)];
+      var uniq = {}; uniq[yIdx] = 1; uniq[mIdx] = 1; uniq[dIdx] = 1;
+      var uniqCount = Object.keys(uniq).length;
+      var shape = uniqCount === 1 ? "点" : (uniqCount === 2 ? "線" : "三角形");
+      var regions = {};
+      // 図形が「通過した領域」をサンプリングで数える（算命学Stock「通過した領域をカウント」準拠）
+      if (uniqCount === 1) {
+        regions[kdrRegionOf(pts[0].x, pts[0].y)] = true;
+      } else if (uniqCount === 2) {
+        var a = pts[0], b = pts[1];
+        if (b.x === a.x && b.y === a.y) b = pts[2];
+        for (var t = 0; t <= 400; t++) {
+          var lx = a.x + (b.x - a.x) * t / 400, ly = a.y + (b.y - a.y) * t / 400;
+          if (lx * lx + ly * ly > 1e-9) regions[kdrRegionOf(lx, ly)] = true;
+        }
+      } else {
+        var N = 160;
+        for (var i = 0; i <= N; i++) {
+          for (var jj = 0; jj <= N - i; jj++) {
+            var u = i / N, v = jj / N, w = 1 - u - v;
+            var tx = pts[0].x * u + pts[1].x * v + pts[2].x * w;
+            var ty = pts[0].y * u + pts[1].y * v + pts[2].y * w;
+            if (tx * tx + ty * ty > 1e-9) regions[kdrRegionOf(tx, ty)] = true;
+          }
+        }
+      }
+      var list = Object.keys(regions).map(Number).sort();
+      return { count: list.length, regions: list, shape: shape, pts: pts };
+    }
+    function buildUchubanSVG(kdr, names, col) {
+      var C = 150, R = 110;
+      function px(p, r) { return { x: C + p.x * r, y: C + p.y * r }; }
+      var s = '<svg viewBox="0 0 300 300" style="max-width:320px;width:100%;display:block;margin:0 auto;">';
+      // またがる領域を薄く塗る
+      for (var q = 0; q < 4; q++) {
+        if (kdr.regions.indexOf(q + 1) < 0) continue;
+        var a1 = q * 90 * Math.PI / 180, a2 = (q + 1) * 90 * Math.PI / 180;
+        var p1 = { x: C + Math.sin(a1) * R, y: C - Math.cos(a1) * R };
+        var p2 = { x: C + Math.sin(a2) * R, y: C - Math.cos(a2) * R };
+        s += '<path d="M ' + C + ' ' + C + ' L ' + p1.x.toFixed(1) + ' ' + p1.y.toFixed(1) +
+             ' A ' + R + ' ' + R + ' 0 0 1 ' + p2.x.toFixed(1) + ' ' + p2.y.toFixed(1) + ' Z" fill="' + col.hl + '"/>';
+      }
+      s += '<circle cx="' + C + '" cy="' + C + '" r="' + R + '" fill="none" stroke="' + col.line + '" stroke-width="1.5"/>';
+      s += '<line x1="' + C + '" y1="' + (C - R) + '" x2="' + C + '" y2="' + (C + R) + '" stroke="' + col.line + '" stroke-width="1" opacity="0.55"/>';
+      s += '<line x1="' + (C - R) + '" y1="' + C + '" x2="' + (C + R) + '" y2="' + C + '" stroke="' + col.line + '" stroke-width="1" opacity="0.55"/>';
+      for (var i2 = 0; i2 < 60; i2++) {
+        var ta = (i2 + 0.5) * 6 * Math.PI / 180;
+        s += '<line x1="' + (C + Math.sin(ta) * R).toFixed(1) + '" y1="' + (C - Math.cos(ta) * R).toFixed(1) +
+             '" x2="' + (C + Math.sin(ta) * (R - 4)).toFixed(1) + '" y2="' + (C - Math.cos(ta) * (R - 4)).toFixed(1) +
+             '" stroke="' + col.line + '" stroke-width="0.6" opacity="0.5"/>';
+      }
+      var labelPos = [
+        { x: C + 62, y: C - 62, t: "第一(丑寅)" }, { x: C + 62, y: C + 66, t: "第二(辰巳)" },
+        { x: C - 62, y: C + 66, t: "第三(未申)" }, { x: C - 62, y: C - 62, t: "第四(戌亥)" }
+      ];
+      labelPos.forEach(function(lp) {
+        s += '<text x="' + lp.x + '" y="' + lp.y + '" text-anchor="middle" font-size="10" fill="' + col.text + '" opacity="0.85">' + lp.t + '</text>';
+      });
+      var vp = kdr.pts.map(function(p) { return px(p, R); });
+      if (kdr.shape === "三角形") {
+        s += '<polygon points="' + vp.map(function(p) { return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ') +
+             '" fill="' + col.fill + '" stroke="' + col.accent + '" stroke-width="1.8"/>';
+      } else if (kdr.shape === "線") {
+        var la = vp[0], lb = null;
+        for (var li = 1; li < 3; li++) { if (vp[li].x !== la.x || vp[li].y !== la.y) lb = vp[li]; }
+        if (lb) s += '<line x1="' + la.x.toFixed(1) + '" y1="' + la.y.toFixed(1) + '" x2="' + lb.x.toFixed(1) + '" y2="' + lb.y.toFixed(1) + '" stroke="' + col.accent + '" stroke-width="2"/>';
+      }
+      var vLabels = [{ t: "年 " + names.y }, { t: "月 " + names.m }, { t: "日 " + names.d }];
+      var seen = {};
+      for (var vi = 0; vi < 3; vi++) {
+        var p = kdr.pts[vi];
+        var key = p.x.toFixed(4) + ',' + p.y.toFixed(4);
+        var op = px(p, R);
+        s += '<circle cx="' + op.x.toFixed(1) + '" cy="' + op.y.toFixed(1) + '" r="4" fill="' + col.accent + '"/>';
+        var lp2 = px(p, R + (seen[key] ? 30 : 16));
+        s += '<text x="' + lp2.x.toFixed(1) + '" y="' + (lp2.y + 3).toFixed(1) + '" text-anchor="middle" font-size="10" fill="' + col.text + '">' + vLabels[vi].t + '</text>';
+        seen[key] = (seen[key] || 0) + 1;
+      }
+      s += '</svg>';
+      return s;
+    }
+
     // 任意日付の年柱・月柱・日柱を計算（年運・月運用に汎用化）
     // 戻り値: { yIdx, ykan, yshi, mEtoIdx, mkan, mshi, dayIdx, dkan, dshi, jd }
     function calcKanshiForDate(year, month, day) {
@@ -2133,6 +2245,19 @@
         // 才能占技（才能星=伴星）
         // 順序: [北(目上), 東(社会), 中心, 西(家庭), 南(目下)]
         var starsList = [northStar, eastStar, centerStar, westStar, southStar];
+        // 行動領域（宇宙盤）260826追加
+        var kdr = calcKoudouRyouiki(yIdx, mEtoIdx, dayIdx);
+        var ubEl = document.getElementById('uchuban-box');
+        if (ubEl) ubEl.innerHTML = buildUchubanSVG(kdr, { y: ykan + yshi, m: mkan + mshi, d: dkan + dshi },
+          { line: "#6b6377", accent: "#e2b46a", fill: "rgba(226,180,106,0.18)", hl: "rgba(226,180,106,0.06)", text: "#b7b1c4" });
+        var kdEl = document.getElementById('koudou-detail');
+        if (kdEl) {
+          var kdRegDescs = kdr.regions.map(function(r) { var inf = KOUDOU_RYOUIKI_INFO[r - 1]; return inf.name + "（" + inf.corner + "）：" + inf.desc; }).join("<br>");
+          kdEl.innerHTML = "<strong>" + kdr.count + "領域</strong>（図形：" + kdr.shape + "）<br>" +
+            "<span style='font-size:11px;'>" + kdRegDescs + "</span>" +
+            "<div style='margin-top:6px;font-size:11px;'>行動領域＝影響を及ぼす人間関係の広さ。広い＝才能ではなく影響圏の広さ。星が強い人は広い領域が活き、星が弱い人は狭い領域の方が機能する（教科書17_応用占技）。</div>";
+        }
+
         var sainou = getSainou(hanseiStar, centerStar, starsList);
         var sEl = document.getElementById('sainou-detail');
         if (sEl) {
@@ -3624,6 +3749,7 @@
       md += "## 調候守護神\n" + get('chouko-detail') + "\n\n";
 
       md += "## 才能占技\n" + get('sainou-detail') + "\n\n";
+      md += "## 行動領域(宇宙盤)\n" + get('koudou-detail') + "\n\n";
 
       md += "## 人生テーマ\n";
       md += get('theme-renai') + "\n" + get('theme-marriage') + "\n" + get('theme-money') + "\n" + get('theme-life') + "\n" + get('theme-yume') + "\n\n";
@@ -4074,6 +4200,53 @@
       if (yTen.indexOf(k.dshi) >= 0 && mine.indexOf(k.yshi) >= 0) out.push("互換中殺（親と互いの天中殺を抱え合う・初代の気）");
       return out;
     }
+
+    // 相性用：二人の宇宙盤を重ねて描く（260826追加・行動領域の重なり）
+    function buildUchubanSVG2(kdrA, kdrB, nameA, nameB) {
+      var C = 150, R = 110;
+      var col = { line: "#6b6377", text: "#b7b1c4", hl: "rgba(226,180,106,0.10)" };
+      var colA = "#e2b46a", colB = "#7fb8d8";
+      var overlap = kdrA.regions.filter(function(r){ return kdrB.regions.indexOf(r) >= 0; });
+      var s = '<svg viewBox="0 0 300 300" style="max-width:320px;width:100%;display:block;margin:0 auto;">';
+      for (var q = 0; q < 4; q++) {
+        if (overlap.indexOf(q + 1) < 0) continue;
+        var a1 = q * 90 * Math.PI / 180, a2 = (q + 1) * 90 * Math.PI / 180;
+        s += '<path d="M ' + C + ' ' + C + ' L ' + (C + Math.sin(a1) * R).toFixed(1) + ' ' + (C - Math.cos(a1) * R).toFixed(1) +
+             ' A ' + R + ' ' + R + ' 0 0 1 ' + (C + Math.sin(a2) * R).toFixed(1) + ' ' + (C - Math.cos(a2) * R).toFixed(1) + ' Z" fill="' + col.hl + '"/>';
+      }
+      s += '<circle cx="' + C + '" cy="' + C + '" r="' + R + '" fill="none" stroke="' + col.line + '" stroke-width="1.5"/>';
+      s += '<line x1="' + C + '" y1="' + (C - R) + '" x2="' + C + '" y2="' + (C + R) + '" stroke="' + col.line + '" stroke-width="1" opacity="0.55"/>';
+      s += '<line x1="' + (C - R) + '" y1="' + C + '" x2="' + (C + R) + '" y2="' + C + '" stroke="' + col.line + '" stroke-width="1" opacity="0.55"/>';
+      for (var i = 0; i < 60; i++) {
+        var ta = (i + 0.5) * 6 * Math.PI / 180;
+        s += '<line x1="' + (C + Math.sin(ta) * R).toFixed(1) + '" y1="' + (C - Math.cos(ta) * R).toFixed(1) +
+             '" x2="' + (C + Math.sin(ta) * (R - 4)).toFixed(1) + '" y2="' + (C - Math.cos(ta) * (R - 4)).toFixed(1) +
+             '" stroke="' + col.line + '" stroke-width="0.6" opacity="0.5"/>';
+      }
+      [{x:C+62,y:C-62,t:"第一(丑寅)"},{x:C+62,y:C+66,t:"第二(辰巳)"},{x:C-62,y:C+66,t:"第三(未申)"},{x:C-62,y:C-62,t:"第四(戌亥)"}].forEach(function(lp){
+        s += '<text x="' + lp.x + '" y="' + lp.y + '" text-anchor="middle" font-size="10" fill="' + col.text + '" opacity="0.85">' + lp.t + '</text>';
+      });
+      function fig(kdr, color, fillOp) {
+        var vp = kdr.pts.map(function(pp){ return { x: C + pp.x * R, y: C + pp.y * R }; });
+        var out = '';
+        if (kdr.shape === "三角形") {
+          out += '<polygon points="' + vp.map(function(pp){ return pp.x.toFixed(1) + ',' + pp.y.toFixed(1); }).join(' ') +
+                 '" fill="' + color + '" fill-opacity="' + fillOp + '" stroke="' + color + '" stroke-width="1.8"/>';
+        } else if (kdr.shape === "線") {
+          var la = vp[0], lb = null;
+          for (var li = 1; li < 3; li++) { if (vp[li].x !== la.x || vp[li].y !== la.y) lb = vp[li]; }
+          if (lb) out += '<line x1="' + la.x.toFixed(1) + '" y1="' + la.y.toFixed(1) + '" x2="' + lb.x.toFixed(1) + '" y2="' + lb.y.toFixed(1) + '" stroke="' + color + '" stroke-width="2"/>';
+        }
+        vp.forEach(function(pp){ out += '<circle cx="' + pp.x.toFixed(1) + '" cy="' + pp.y.toFixed(1) + '" r="3.5" fill="' + color + '"/>'; });
+        return out;
+      }
+      s += fig(kdrA, colA, 0.15) + fig(kdrB, colB, 0.15);
+      s += '<rect x="14" y="14" width="10" height="10" fill="' + colA + '"/><text x="29" y="23" font-size="10" fill="' + col.text + '">' + nameA + '</text>';
+      s += '<rect x="14" y="30" width="10" height="10" fill="' + colB + '"/><text x="29" y="39" font-size="10" fill="' + col.text + '">' + nameB + '</text>';
+      s += '</svg>';
+      return s;
+    }
+
     function calcAishou(){
       var errEl = document.getElementById('mt-error');
       errEl.textContent = "";
@@ -4195,6 +4368,22 @@
       }
 
       mtRenderAishou(out);
+      // 行動領域の重なり（260826追加・教科書17_応用占技：重なり大=相互依存で縁が切れにくい／少=生きる世界が違う）
+      var kdrA = calcKoudouRyouiki(A.yIdx, A.mEtoIdx, A.dayIdx);
+      var kdrB = calcKoudouRyouiki(B.yIdx, B.mEtoIdx, B.dayIdx);
+      var kdrOverlap = kdrA.regions.filter(function(r){ return kdrB.regions.indexOf(r) >= 0; });
+      function kdrRegNames(list){ return list.length ? list.map(function(r){ return KOUDOU_RYOUIKI_INFO[r-1].name; }).join("・") : "なし"; }
+      var kdrBody = buildUchubanSVG2(kdrA, kdrB, A.name, B.name) +
+        A.name + "：" + kdrA.count + "領域（" + kdrRegNames(kdrA.regions) + "）\n" +
+        B.name + "：" + kdrB.count + "領域（" + kdrRegNames(kdrB.regions) + "）\n" +
+        "重なり：" + kdrOverlap.length + "領域（" + kdrRegNames(kdrOverlap) + "）\n" +
+        (kdrOverlap.length >= 2
+          ? "生きる世界が大きく重なるふたり。互いの影響圏の中で暮らす相互依存の縁で、長く切れにくい。近すぎて煮詰まる時は、あえて別行動の時間を作ると風通しが良くなる"
+          : (kdrOverlap.length === 1
+            ? "影響圏が一部で重なる。重なる領域が共通の土俵＝そこで一緒に動くと縁が深まる。それ以外は互いの世界を尊重する距離感が合う"
+            : "生きる世界が重ならないふたり。役割分担は自然に決まる一方、放っておくと接点が減る。共有の時間・場所を意識的に作ることが縁を保つ鍵"));
+      out.sections.push({ h:"行動領域の重なり（宇宙盤）", b: kdrBody });
+
       mtLastAishou = out;
     }
     var mtLastAishou = null;
@@ -4229,6 +4418,8 @@
         md2 += "| 日柱 | 月柱 | 年柱 |\n|---|---|---|\n";
         md2 += "| " + k.dkan + k.dshi + " | " + k.mkan + k.mshi + " | " + k.ykan + k.yshi + " |\n";
         md2 += "- 天中殺：" + k.tenchu + "\n";
+        var kdrP = calcKoudouRyouiki(k.yIdx, k.mEtoIdx, k.dayIdx);
+        md2 += "- 行動領域：" + kdrP.count + "領域（" + kdrP.regions.map(function(r){ return KOUDOU_RYOUIKI_INFO[r-1].name; }).join("・") + "・図形=" + kdrP.shape + "）\n";
         if (typeof nikkanCharacter === 'function') {
           var c = nikkanCharacter(k.dkan, k.dshi);
           if (c) md2 += "- 日干支の質感：" + c + "\n";
