@@ -4382,10 +4382,14 @@
       var kdrB = calcKoudouRyouiki(B.yIdx, B.mEtoIdx, B.dayIdx);
       var kdrOverlap = kdrA.regions.filter(function(r){ return kdrB.regions.indexOf(r) >= 0; });
       function kdrRegNames(list){ return list.length ? list.map(function(r){ return KOUDOU_RYOUIKI_INFO[r-1].name; }).join("・") : "なし"; }
+      var kdrUnion = kdrA.regions.slice();
+      kdrB.regions.forEach(function(r){ if (kdrUnion.indexOf(r) < 0) kdrUnion.push(r); });
+      kdrUnion.sort();
+      var kdrUnionDesc = kdrUnion.map(function(r){ var inf = KOUDOU_RYOUIKI_INFO[r-1]; return "・" + inf.name + "（" + inf.corner + "）＝" + inf.desc; }).join("\n");
       var kdrBody = buildUchubanSVG2(kdrA, kdrB, A.name, B.name) +
         A.name + "：" + kdrA.count + "領域（" + kdrRegNames(kdrA.regions) + "）\n" +
         B.name + "：" + kdrB.count + "領域（" + kdrRegNames(kdrB.regions) + "）\n" +
-        "重なり：" + kdrOverlap.length + "領域（" + kdrRegNames(kdrOverlap) + "）\n" +
+        "重なり：" + kdrOverlap.length + "領域（" + kdrRegNames(kdrOverlap) + "）\n" + kdrUnionDesc + "\n" +
         // 重なり数の読みは教科書17_応用占技2-4（夫婦の行動特色）準拠
         ["生きる世界が重ならないふたり。別居婚・国際結婚など型破りな形が合う。役割分担は自然に決まるが、共有の時間・場所を意識的に作ることが縁を保つ鍵",
          "大家族・広い社会関与で活きるふたり。重なる領域が共通の土俵＝そこで一緒に動くと縁が深まる",
