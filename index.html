@@ -4377,7 +4377,6 @@
         out.sections.push({ h:"親子の軸（4軸）", b: lines.join("\n\n") });
       }
 
-      mtRenderAishou(out);
       // 行動領域の重なり（260826追加・教科書17_応用占技：重なり大=相互依存で縁が切れにくい／少=生きる世界が違う）
       var kdrA = calcKoudouRyouiki(A.yIdx, A.mEtoIdx, A.dayIdx);
       var kdrB = calcKoudouRyouiki(B.yIdx, B.mEtoIdx, B.dayIdx);
@@ -4397,6 +4396,9 @@
       out.sections.push({ h:"行動領域の重なり（宇宙盤）", b: kdrBody });
 
       mtLastAishou = out;
+      // 【260903修正】mtRenderAishouは全セクション（行動領域の重なり含む）を積んだ後に呼ぶ。
+      // 旧位置（行動領域pushの前）では重なりセクションが表示されないバグだった
+      mtRenderAishou(out);
     }
     var mtLastAishou = null;
 
